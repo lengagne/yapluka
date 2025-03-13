@@ -8,6 +8,7 @@
 #include <QString>
 #include <QDebug>
 #include <QListWidgetItem>
+#include "category.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class YaplukaWindow; }
@@ -27,7 +28,9 @@ struct AffichOption{
 
 class TaskReader {
 public:
-    QList<Task> lireFichier(const QString &filePath);
+    void lireFichier(const QString &filePath,
+                           QList<Task>& tasks/*,
+                           QList<category>& categories*/);
 };
 
 
@@ -67,6 +70,8 @@ private slots:
 
     void on_actionpourcentage_triggered();
 
+    void on_categorie_widget_cellActivated(int row, int column);
+
 private:
     void loadSettings();
 
@@ -83,6 +88,8 @@ private:
     bool print_option_[5];
 
     QList<Task> tasks_;
+
+    list_category categories_;
 
     unsigned int nb_colonnes_;
 

@@ -6,6 +6,8 @@
 #include <QSettings>
 
 
+// to do, sauvegarder le nom de la colonne pour le tri (la c'est le numéro)
+
 YaplukaWindow::YaplukaWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::YaplukaWindow)
@@ -21,8 +23,9 @@ YaplukaWindow::YaplukaWindow(QWidget *parent)
     qDebug()<<"currentFileName_ = "<< currentFileName_;
 
     // Vérifiez que le QTableWidget est bien ajouté à un layout
-    QVBoxLayout * verticalLayout = new QVBoxLayout;
+    QHBoxLayout * verticalLayout = new QHBoxLayout;
     verticalLayout->addWidget(ui->tableWidget);
+    verticalLayout->addWidget(ui->categorie_widget);
 
     // Assurez-vous que le centralwidget utilise ce layout
     ui->centralwidget->setLayout(verticalLayout);
@@ -56,20 +59,22 @@ void YaplukaWindow::read_file()
     }
 
     TaskReader reader;
-    tasks_ = reader.lireFichier(currentFileName_);
+    reader.lireFichier(currentFileName_, tasks_);
+    categories_.init(currentFileName_);
 
     update_list();
 }
 
 void YaplukaWindow::update_list()
 {
+    ui->tableWidget->clearContents();
     ui->tableWidget->clear();
-
+    ui->tableWidget->setRowCount(0);
     QStringList headers;
     nb_colonnes_=0;
     for (int i=0;i<5;i++)
     {
-        qDebug()<<"print_option_["<< i<<"] = "<< print_option_[i];
+//        qDebug()<<"print_option_["<< i<<"] = "<< print_option_[i];
         if( print_option_[i])
         {
             nb_colonnes_++;
@@ -89,7 +94,25 @@ void YaplukaWindow::update_list()
     ui->tableWidget->setHorizontalHeaderLabels(headers);
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
+    ui->categorie_widget->clear();
+    //ui->categorie_widget->setColumnCount(1);
+    categories_.update_display(ui->categorie_widget);
 
+
+
+/*    for (const category &c : categories_)
+    {
+        ui->categorie_widget->insertRow(0);
+
+        QTableWidgetItem *item = new QTableWidgetItem(c.name_);
+        if (item) {
+            //qDebug()<<"c.bgColor_ = "<<c.bgColor_;
+            item->setBackground(QBrush(QColor(c.bgColor_[0].toInt(), c.bgColor_[1].toInt(), c.bgColor_[2].toInt()))); // Jaune
+        }
+
+        ui->categorie_widget->setItem(0,0, item);
+        qDebug()<<" print cat : "<< c.name_;
+    }*/
 
     for (const Task &p : tasks_) if (affich_option_.affich_fini_ || p.percentageComplete <100)
     {
@@ -113,17 +136,13 @@ void YaplukaWindow::update_list()
                       }
                       case 4:
                       {
+                          //qDebug()<<"on affiche la priorité :"<<p.percentageComplete;
                           item = new QTableWidgetItem();
                           item->setData(Qt::DisplayRole, p.percentageComplete);
                           item->setData(Qt::EditRole, p.percentageComplete);
                           break;
                       }
                       default: qDebug() << "This should not happen";
-                  }
-
-                  // Exemple : Colorer les cellules en fonction de la priorité
-                  if ( p.priority > 5) {
-                      item->setBackground(QBrush(QColor(255, 100, 100))); // Rouge clair pour haute priorité
                   }
 
                   if (item) {
@@ -149,19 +168,21 @@ void YaplukaWindow::on_actionQuitter_triggered()
 
 
 
-QList<Task> TaskReader::lireFichier(const QString &filePath)
+void TaskReader::lireFichier(const QString &filePath,
+                             QList<Task>& tasks)
 {
-    QList<Task> tasks;
+    tasks.clear();
+    //categories.clear();
     QFile file(filePath);
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qWarning("Erreur d'ouverture du fichier");
-        return tasks;
     }
 
     QXmlStreamReader xmlReader(&file);
 
     Task currentTask;
+    category current_cat;
 
     while (!xmlReader.atEnd()) {
         xmlReader.readNext();
@@ -183,11 +204,29 @@ QList<Task> TaskReader::lireFichier(const QString &filePath)
                     currentTask.percentageComplete = xmlReader.attributes().value("percentageComplete").toInt();
                 }
             }
+            /*else if (xmlReader.name() == "category"){
+                current_cat = category();
+                if (xmlReader.attributes().hasAttribute("subject")) {
+                    current_cat.name_ = xmlReader.attributes().value("subject").toString();
+                    qDebug()<<" found cat : "<< current_cat.name_;
+                }
+                if (xmlReader.attributes().hasAttribute("bgColor")) {
+                    QString bgColorStr = xmlReader.attributes().value("bgColor").toString();
+                    // Supprimer les parenthèses et diviser la chaîne en valeurs
+                    bgColorStr.remove("(").remove(")");
+                    current_cat.bgColor_ = bgColorStr.split(", ");
+                }
+
+            }*/
         }
         // Si l'élément est une balise de fin
         else if (xmlReader.isEndElement() && xmlReader.name() == "task") {
             tasks.append(currentTask);
         }
+        /*else if (xmlReader.isEndElement() && xmlReader.name() == "category") {
+            qDebug()<<" ajout de "<< current_cat.name_;
+            categories.append(current_cat);
+        }*/
     }
 
     if (xmlReader.hasError()) {
@@ -195,7 +234,7 @@ QList<Task> TaskReader::lireFichier(const QString &filePath)
     }
 
     file.close();
-    return tasks;
+    //return tasks;
 }
 
 void YaplukaWindow::on_treeView_collapsed(const QModelIndex &index)
@@ -285,9 +324,23 @@ void YaplukaWindow::loadSettings()
     // Charger l'option d'affichage des tâches terminées
     affich_option_.affich_fini_ = settings.value("showFinishedTasks", true).toBool();
 
+    // Charger l'état de tri
+    int sortColumn = settings.value("sortColumn", -1).toInt();
+    Qt::SortOrder sortOrder = static_cast<Qt::SortOrder>(settings.value("sortOrder", Qt::AscendingOrder).toInt());
 
+    // Appliquer l'état de tri si une colonne valide est trouvée
+    if (sortColumn >= 0 && sortColumn < ui->tableWidget->columnCount()) {
+        ui->tableWidget->sortItems(sortColumn, sortOrder);
+    }
+
+    // on remet à jour les check box
     ui->actionid->setChecked(print_option_[0]);
     update_list();
+
+    if (sortColumn >= 0 && sortColumn < ui->tableWidget->columnCount()) {
+        ui->tableWidget->sortItems(sortColumn, sortOrder);
+    }
+
 }
 
 void YaplukaWindow::saveSettings() const
@@ -308,4 +361,18 @@ void YaplukaWindow::saveSettings() const
 
     // Sauvegarder l'option d'affichage des tâches terminées
     settings.setValue("showFinishedTasks", affich_option_.affich_fini_);
+
+    // Obtenir l'état de tri actuel
+    int sortColumn = ui->tableWidget->horizontalHeader()->sortIndicatorSection();
+    Qt::SortOrder sortOrder = ui->tableWidget->horizontalHeader()->sortIndicatorOrder();
+
+    // Sauvegarder l'état de tri
+    settings.setValue("sortColumn", sortColumn);
+    settings.setValue("sortOrder", sortOrder);
 }
+
+void YaplukaWindow::on_categorie_widget_cellActivated(int row, int column)
+{
+
+}
+
