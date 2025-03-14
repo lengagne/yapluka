@@ -20,8 +20,14 @@ set(PROJECT_SOURCES
         main.cpp
         yaplukawindow.cpp
         yaplukawindow.h
+        list_category.cpp
+        list_category.h
         category.cpp
         category.h
+        task.cpp
+        task.h
+        list_task.cpp
+        list_task.h
         yaplukawindow.ui
         ${TS_FILES}
 )

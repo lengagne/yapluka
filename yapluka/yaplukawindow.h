@@ -3,34 +3,18 @@
 
 #include <QMainWindow>
 #include <QXmlStreamReader>
-#include <QFile>
-#include <QList>
-#include <QString>
-#include <QDebug>
-#include <QListWidgetItem>
-#include "category.h"
+#include "list_category.h"
+#include "list_task.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class YaplukaWindow; }
 QT_END_NAMESPACE
 
 
-struct Task {
-    QString subject;
-    unsigned int priority;
-    QString id;
-    unsigned int percentageComplete;
-};
+
 
 struct AffichOption{
     bool affich_fini_ = false;
-};
-
-class TaskReader {
-public:
-    void lireFichier(const QString &filePath,
-                           QList<Task>& tasks/*,
-                           QList<category>& categories*/);
 };
 
 
@@ -87,7 +71,7 @@ private:
 
     bool print_option_[5];
 
-    QList<Task> tasks_;
+    list_task tasks_;
 
     list_category categories_;
 

@@ -9,16 +9,13 @@ category::category()
 category::category(QDomElement root, int level)
 {
     level_ = level;
-    qDebug()<<"on créer une catégorie";
     // Parcourir les éléments enfants de l'élément racine
 
     // Accéder à l'attribut "subject"
     QDomAttr subjectAttr = root.attributeNode("subject");
     if (!subjectAttr.isNull()) {
         name_ = subjectAttr.value();
-        qDebug() << "Valeur de l'attribut 'subject' :" << subjectAttr.value();
     } else {
-        qDebug() << "L'attribut 'subject' n'existe pas.";
     }
 
     QDomAttr bgcolorAttr = root.attributeNode("bgColor");
@@ -38,20 +35,44 @@ category::category(QDomElement root, int level)
         fgColor_ = fgColorStr.split(", ");
     }
 
+    QDomAttr idsAttr = root.attributeNode("categorizables");
+    if (!idsAttr.isNull())
+    {
+        QString attrValue = idsAttr.value();
+        QStringList idList = attrValue.split(" ",Qt::SplitBehaviorFlags::SkipEmptyParts);
+
+        // Convertir QStringList en QList<QString>
+        ids_ =  QList<QString>(idList.begin(), idList.end());
+    }
 
     QDomNodeList rootElements = root.childNodes();
     for (int i = 0; i < rootElements.count(); ++i) {
         QDomNode node = rootElements.at(i);
         if (node.isElement() && node.toElement().tagName()=="category") {
-
-            qDebug() << level<< " Nom de l'élément :" << node.toElement().tagName();
             category* item = new category(node.toElement(),level+1);
             children_.append(item);
         }
     }
 }
 
-
+category* category::get_cat_for_id( QString id)
+{
+    if (ids_.contains(id)) {
+        // Le QString est présent dans le QList
+        //qDebug()<<" l'id "<<id <<" appartient à la cat: "<< name_;
+        return this;
+    } else {
+        // Le QString n'est pas présent dans le QList
+        for (category* c : children_)
+        {
+            if (c->get_cat_for_id(id))
+            {
+                return c->get_cat_for_id(id);
+            }
+        }
+    }
+    return 0;
+}
 
 void category::update_display(QTreeWidgetItem* cat_widget)
 {
@@ -66,7 +87,6 @@ void category::update_display(QTreeWidgetItem* cat_widget)
     {
         QTreeWidgetItem *childitem = new QTreeWidgetItem(cat_widget);
         c->update_display(childitem);
-
     }
 
   /*  QTreeWidgetItem *childItem1 = new QTreeWidgetItem(parentItem);
@@ -78,47 +98,3 @@ void category::update_display(QTreeWidgetItem* cat_widget)
     //master_->update_display(cat_widget);
 }
 
-
-list_category::list_category()
-{
-    master_ = new category();
-}
-
-void list_category::init(QString FileName)
-{
-    // Créer un document DOM
-    QDomDocument document;
-
-    // Charger le fichier XML
-    QFile file(FileName);
-    if (!file.open(QIODevice::ReadOnly)) {
-        qWarning("Erreur lors de l'ouverture du fichier.");
-        return;
-    }
-
-    // Parser le fichier XML
-    if (!document.setContent(&file)) {
-        qWarning("Erreur lors du parsing du fichier XML.");
-        file.close();
-        return;
-    }
-    file.close();
-
-    // Obtenir l'élément racine
-    QDomElement root = document.documentElement();
-    if (root.isNull()) {
-        qWarning("Le document XML est vide.");
-        return;
-    }
-
-    master_ = new category(root);
-
-
-}
-
-void list_category::update_display(QTreeWidget* cat_widget)
-{
-    cat_widget->setHeaderLabels(QStringList() << "Nom" );
-    master_->update_display(cat_widget->invisibleRootItem());
-    cat_widget->expandAll();
-}

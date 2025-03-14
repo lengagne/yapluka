@@ -17,6 +17,8 @@ public:
 
     category(QDomElement element, int level=0);
 
+    category* get_cat_for_id( QString id);
+
     void update_display(QTreeWidgetItem* cat_widget);
 
     QList<QString> ids_;
@@ -26,20 +28,8 @@ public:
     QStringList fgColor_ = QStringList() << "0" << "0" << "0";
 
     QList<category*> children_;
+
 };
 
-
-class list_category
-{
-public:
-    list_category();
-
-    void init(QString currentFileName_);
-
-    void update_display(QTreeWidget* cat_widget);
-
-private:
-    category* master_;
-};
 
 #endif // CATEGORY_H
