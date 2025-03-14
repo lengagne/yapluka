@@ -17,7 +17,7 @@ public:
     task();
     task(QDomElement element, int level=0);
     void update_category(list_category& cats);
-    void update_display(QTreeWidgetItem* task_widget);
+    void update_display(QTreeWidgetItem* task_widget, bool cache=true);
 
 private:
     QString subject_;

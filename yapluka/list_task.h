@@ -12,7 +12,8 @@ public:
     void init(QString FileName,
               list_category& categories_);
 
-    void update_display(QTreeWidget* task_widget);
+    void update_display(QTreeWidget* task_widget,
+                        bool cache = true);
 private:
     task* master_ = nullptr;
 

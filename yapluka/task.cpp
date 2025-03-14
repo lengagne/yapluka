@@ -86,39 +86,31 @@ void task::update_category(list_category& cats)
         c->update_category(cats);
 }
 
-void task::update_display(QTreeWidgetItem* task_widget)
+void task::update_display(QTreeWidgetItem* task_widget, bool cache)
 {
-    if (level_)
+    if ( percentage_<99 || !cache)
     {
-        task_widget->setText(0, id_);
-        task_widget->setText(1, subject_);
-        if (cat_)
-            task_widget->setText(2, cat_->name_);
-        else
-            task_widget->setText(2, "");
+        if (level_ )
+        {
+            task_widget->setText(0, id_);
+            task_widget->setText(1, subject_);
+            if (cat_)
+                task_widget->setText(2, cat_->name_);
+            else
+                task_widget->setText(2, "");
 
-        task_widget->setText(3, QString::asprintf("%02d",priority_));
-        task_widget->setText(4, creationdate_.toString("yyyy-MM-dd"));
-        task_widget->setText(5, actualstartdate_.toString("yyyy-MM-dd"));
-        task_widget->setText(6, completiondate_.toString("yyyy-MM-dd"));
-        task_widget->setText(7, modificationdate_.toString("yyyy-MM-dd"));
-        task_widget->setText(8, QString::asprintf("%03d",percentage_));
+            task_widget->setText(3, QString::asprintf("%02d",priority_));
+            task_widget->setText(4, creationdate_.toString("yyyy-MM-dd"));
+            task_widget->setText(5, actualstartdate_.toString("yyyy-MM-dd"));
+            task_widget->setText(6, completiondate_.toString("yyyy-MM-dd"));
+            task_widget->setText(7, modificationdate_.toString("yyyy-MM-dd"));
+            task_widget->setText(8, QString::asprintf("%03d",percentage_));
 
+        }
+        for (task* c : sub_tasks_)
+        {
+            QTreeWidgetItem *childitem = new QTreeWidgetItem(task_widget);
+            c->update_display(childitem,cache);
+        }
     }
-
-
-
-    for (task* c : sub_tasks_)
-    {
-        QTreeWidgetItem *childitem = new QTreeWidgetItem(task_widget);
-        c->update_display(childitem);
-    }
-
-  /*  QTreeWidgetItem *childItem1 = new QTreeWidgetItem(parentItem);
-    childItem1->setText(0, "Enfant 1");
-    childItem1->setBackground(0,QBrush(QColor(10,20,30))); // Jaune
-    tree->expandAll();
-*/
-
-    //master_->update_display(cat_widget);
 }

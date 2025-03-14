@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>802</width>
-    <height>599</height>
+    <width>849</width>
+    <height>566</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,63 +20,77 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
-   <widget class="QWidget" name="verticalLayoutWidget">
+   <widget class="QWidget" name="verticalLayoutWidget_2">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>0</y>
-      <width>781</width>
-      <height>531</height>
+      <x>9</x>
+      <y>9</y>
+      <width>831</width>
+      <height>481</height>
      </rect>
     </property>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <property name="sizeConstraint">
-      <enum>QLayout::SetDefaultConstraint</enum>
-     </property>
-     <item>
-      <widget class="QTreeWidget" name="taskWidget">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>10000</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <column>
-        <property name="text">
-         <string notr="true">1</string>
-        </property>
-       </column>
-      </widget>
-     </item>
-     <item>
-      <widget class="QTreeWidget" name="categorie_widget">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item alignment="Qt::AlignLeft|Qt::AlignTop">
+      <widget class="QCheckBox" name="cachefinibox">
        <property name="enabled">
         <bool>true</bool>
        </property>
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+       <property name="text">
+        <string>cache fini</string>
        </property>
-       <property name="maximumSize">
-        <size>
-         <width>517</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <column>
-        <property name="text">
-         <string notr="true">1</string>
-        </property>
-       </column>
       </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetDefaultConstraint</enum>
+       </property>
+       <item>
+        <widget class="QTreeWidget" name="taskWidget">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>10000</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <column>
+          <property name="text">
+           <string notr="true">1</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTreeWidget" name="categorie_widget">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>517</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <column>
+          <property name="text">
+           <string notr="true">1</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </widget>
@@ -86,7 +100,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>802</width>
+     <width>849</width>
      <height>36</height>
     </rect>
    </property>
@@ -98,28 +112,8 @@
     <addaction name="actionEnregistrer"/>
     <addaction name="actionQuitter"/>
    </widget>
-   <widget class="QMenu" name="menuVue">
-    <property name="title">
-     <string>Affichage</string>
-    </property>
-    <widget class="QMenu" name="menuVue_2">
-     <property name="title">
-      <string>Vue</string>
-     </property>
-     <addaction name="actionid"/>
-     <addaction name="actiontache_2"/>
-     <addaction name="actioncategorie"/>
-     <addaction name="actionpriorite"/>
-     <addaction name="actionpourcentage"/>
-    </widget>
-    <addaction name="menuVue_2"/>
-    <addaction name="actionCacher_fini"/>
-    <addaction name="actionMontrer_fini"/>
-   </widget>
    <addaction name="menuFichier"/>
-   <addaction name="menuVue"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOuvrir">
    <property name="text">
     <string>Ouvrir</string>
@@ -133,79 +127,6 @@
   <action name="actionQuitter">
    <property name="text">
     <string>Quitter</string>
-   </property>
-  </action>
-  <action name="actiontache">
-   <property name="text">
-    <string>tache</string>
-   </property>
-  </action>
-  <action name="actionCacher_fini">
-   <property name="text">
-    <string>Cacher fini</string>
-   </property>
-  </action>
-  <action name="actionMontrer_fini">
-   <property name="text">
-    <string>Montrer fini</string>
-   </property>
-  </action>
-  <action name="actiontache_2">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>tache</string>
-   </property>
-  </action>
-  <action name="actionid">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>id</string>
-   </property>
-  </action>
-  <action name="actioncategorie">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>categorie</string>
-   </property>
-  </action>
-  <action name="actionpriorite">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>priorite</string>
-   </property>
-  </action>
-  <action name="actionpourcentage">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>pourcentage</string>
    </property>
   </action>
  </widget>

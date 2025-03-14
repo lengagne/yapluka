@@ -12,26 +12,31 @@ YaplukaWindow::YaplukaWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::YaplukaWindow)
 {
-    for (int i=0;i<5;i++)
-        print_option_[i] = true;
-
     ui->setupUi(this);
 
-    // Charger les paramètres au démarrage
-    loadSettings();
-    read_file();
-    //qDebug()<<"currentFileName_ = "<< currentFileName_;
 
-    // Vérifiez que le QTableWidget est bien ajouté à un layout
-    QHBoxLayout * verticalLayout = new QHBoxLayout;
-    verticalLayout->addWidget(ui->taskWidget);
-    verticalLayout->addWidget(ui->categorie_widget);
+    QVBoxLayout * verticalLayout = new QVBoxLayout;
+    verticalLayout->addWidget(ui->cachefinibox);
+
+    QHBoxLayout * horizontalLayout = new QHBoxLayout;
+    horizontalLayout->addWidget(ui->taskWidget);
+    horizontalLayout->addWidget(ui->categorie_widget);
+
+    verticalLayout->addLayout(horizontalLayout);
 
     // Assurez-vous que le centralwidget utilise ce layout
     ui->centralwidget->setLayout(verticalLayout);
 
     // Définissez le centralwidget comme widget central de la fenêtre principale
     this->setCentralWidget(ui->centralwidget);
+
+    // Charger les paramètres au démarrage
+    loadSettings();
+    read_file();
+
+
+    ui->taskWidget->header()->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->taskWidget->header(), &QTreeWidget::customContextMenuRequested, this, &YaplukaWindow::showContextMenu);
 
     update_list();
 }
@@ -64,84 +69,12 @@ void YaplukaWindow::read_file()
 void YaplukaWindow::update_list()
 {
     ui->taskWidget->clear();
-    QStringList headers;
-    nb_colonnes_=0;
-    for (int i=0;i<5;i++)
-    {
-//        qDebug()<<"print_option_["<< i<<"] = "<< print_option_[i];
-        if( print_option_[i])
-        {
-            nb_colonnes_++;
-            switch(i){
-                case(0):    headers <<"id";   break;
-                case(1):    headers <<"tache";   break;
-                case(2):    headers <<"categorie";   break;
-                case(3):    headers <<"priorite";   break;
-                case(4):    headers <<"%";   break;
-                default:    headers <<"tmp";
-            }
-        }
-    }
-
-   // qDebug()<<"headers = "<< headers;
     ui->taskWidget->setColumnCount(nb_colonnes_);
-//    ui->taskWidget->setHorizontalHeaderLabels(headers);
-//    ui->taskWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
-
-    tasks_.update_display(ui->taskWidget);
+    tasks_.update_display(ui->taskWidget,cache_fini_);
 
     ui->categorie_widget->clear();
-    //ui->categorie_widget->setColumnCount(1);
     categories_.update_display(ui->categorie_widget);
 
-
-
-/*    for (const Task &p : tasks_) if (affich_option_.affich_fini_ || p.percentageComplete <100)
-    {
-        ui->taskWidget->insertRow(0);
-        int cpt =0;
-        for (int i=0;i<5;i++)
-        {
-            if (print_option_[i])
-              {
-                  QTableWidgetItem *item = nullptr;
-                  switch (i) {
-                      case 0: item = new QTableWidgetItem(p.id); break;
-                      case 1: item = new QTableWidgetItem(p.subject); break;
-                      case 2:
-                      if (p.category_)
-                        item = new QTableWidgetItem(p.category_->name_);
-                      //item->setBackground(0,QBrush(QColor(p.category_->bgColor_[0].toInt(), p.category_->bgColor_[1].toInt(), p.category_->bgColor_[2].toInt())));
-                      //item->setForeground(0,QBrush(QColor(p.category_->fgColor_[0].toInt(), p.category_->fgColor_[1].toInt(), p.category_->fgColor_[2].toInt())));
-                      else {
-                        item = new QTableWidgetItem("");
-                        }
-                      break;
-                      case 3:
-                      {
-                          item = new QTableWidgetItem();
-                          item->setData(Qt::DisplayRole, p.priority);
-                          item->setData(Qt::EditRole, p.priority);
-                          break;
-                      }
-                      case 4:
-                      {
-                          //qDebug()<<"on affiche la priorité :"<<p.percentageComplete;
-                          item = new QTableWidgetItem();
-                          item->setData(Qt::DisplayRole, p.percentageComplete);
-                          item->setData(Qt::EditRole, p.percentageComplete);
-                          break;
-                      }
-                      default: qDebug() << "This should not happen";
-                  }
-
-                  if (item) {
-                      ui->taskWidget->setItem(0, cpt++, item);
-                  }
-              }
-        }
-    }*/
 }
 
 
@@ -157,170 +90,44 @@ void YaplukaWindow::on_actionQuitter_triggered()
     QApplication::quit();
 }
 
-
-
-/*void TaskReader::lireFichier(const QString &filePath,
-                             QList<Task>& tasks,
-                             list_category& categories)
-{
-    tasks.clear();
-    //categories.clear();
-//     QFile file(filePath);
-//
-//     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-//         qWarning("Erreur d'ouverture du fichier");
-//     }
-//
-//     QXmlStreamReader xmlReader(&file);
-
-    Task currentTask;
-    category current_cat;
-
-    while (!xmlReader.atEnd()) {
-        xmlReader.readNext();
-
-        // Si l'élément est une balise de début
-        if (xmlReader.isStartElement()) {
-            if (xmlReader.name() == "task") {
-                currentTask = Task();  // Réinitialiser la structure
-                if (xmlReader.attributes().hasAttribute("subject")) {
-                    currentTask.subject = xmlReader.attributes().value("subject").toString();
-                }
-                if (xmlReader.attributes().hasAttribute("id")) {
-                    currentTask.id = xmlReader.attributes().value("id").toString();
-                    currentTask.category_ = categories.get_cat_for_id(currentTask.id);
-
-
-                }
-                if (xmlReader.attributes().hasAttribute("priority")) {
-                    currentTask.priority = xmlReader.attributes().value("priority").toInt();
-                }
-                if (xmlReader.attributes().hasAttribute("percentageComplete")) {
-                    currentTask.percentageComplete = xmlReader.attributes().value("percentageComplete").toInt();
-                }
-            }
-
-        }
-        // Si l'élément est une balise de fin
-        else if (xmlReader.isEndElement() && xmlReader.name() == "task") {
-            tasks.append(currentTask);
-        }
-    }
-
-    if (xmlReader.hasError()) {
-        qWarning("Erreur de parsing XML");
-    }
-
-    file.close();
-    //return tasks;
-}
-*/
-
-void YaplukaWindow::on_treeView_collapsed(const QModelIndex &index)
-{
-    qDebug()<<"On doit collapser, mais je sais pas ce que c'est";
-
-}
-
-void YaplukaWindow::resizeEvent(QResizeEvent *event) {
-    QMainWindow::resizeEvent(event);
- /*   qDebug()<<"On resize la fenetre  wdith ="<< this->width();
-    ui->taskWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    // S'assurer que le QMainWindow traite l'événement de redimensionnement
-
-    qDebug()<<"nb_colonnes_ = "<<nb_colonnes_;
-    for (int i=0;i<nb_colonnes_;i++)
-        ui->taskWidget->horizontalHeader()->setSectionResizeMode(i, QHeaderView::Stretch);*/
-}
-
-void YaplukaWindow::on_actionCacher_fini_triggered()
-{
-    affich_option_.affich_fini_ = false;
-    qDebug()<<"on cache les fini !";
-    update_list();
-}
-
-
-void YaplukaWindow::on_actionMontrer_fini_triggered()
-{
-    affich_option_.affich_fini_ = true;
-    qDebug()<<"on montre les fini !";
-    update_list();
-}
-
-
-
-
-void YaplukaWindow::on_actionid_triggered()
-{
-    print_option_[0] = !print_option_[0];
-    update_list();
-}
-
-
-void YaplukaWindow::on_actiontache_2_triggered()
-{
-    print_option_[1] = !print_option_[1];
-    update_list();
-}
-
-
-void YaplukaWindow::on_actioncategorie_triggered()
-{
-    print_option_[2] = !print_option_[2];
-    update_list();
-}
-
-
-void YaplukaWindow::on_actionpriorite_triggered()
-{
-    print_option_[3] = !print_option_[2];
-    update_list();
-}
-
-
-void YaplukaWindow::on_actionpourcentage_triggered()
-{
-    print_option_[4] = !print_option_[4];
-    update_list();
-}
-
 void YaplukaWindow::loadSettings()
 {
+    ui->taskWidget->clear();
     QSettings settings("yapluka", "config");
 
     // Charger le nom du fichier
     currentFileName_ = settings.value("lastOpenedFile").toString();
-/*
-    // Charger les configurations des cases à cocher
-    int size = settings.beginReadArray("printOptions");
-    for (int i = 0; i < size; ++i) {
-        settings.setArrayIndex(i);
-        print_option_[i] = settings.value("checked").toBool();
+
+    // Charger les noms des colonnes sauvegardés
+    settings.beginGroup("ColumnNames");
+    QStringList headers;
+    for (int i = 0; i < 9; ++i) {
+        headers.append(settings.value(QString::number(i), QString("Colonne %1").arg(i)).toString());
     }
-    settings.endArray();
+    settings.endGroup();
 
-    // Charger l'option d'affichage des tâches terminées
-    affich_option_.affich_fini_ = settings.value("showFinishedTasks", true).toBool();
+    // Appliquer les en-têtes récupérés
+    ui->taskWidget->setHeaderLabels(headers);
+    qDebug()<<"headers : "<< headers;
 
-    // Charger l'état de tri
-    int sortColumn = settings.value("sortColumn", -1).toInt();
-    Qt::SortOrder sortOrder = static_cast<Qt::SortOrder>(settings.value("sortOrder", Qt::AscendingOrder).toInt());
+    // Restaurer la visibilité des colonnes
+    settings.beginGroup("ColumnVisibility");
+    for (int i = 0; i < 9; ++i) {
+        bool visible = settings.value(QString::number(i), true).toBool();
+        ui->taskWidget->setColumnHidden(i, !visible);
+    }
+    settings.endGroup();
 
-    // Appliquer l'état de tri si une colonne valide est trouvée
-    if (sortColumn >= 0 && sortColumn < ui->taskWidget->columnCount()) {
-        ui->taskWidget->sortItems(sortColumn, sortOrder);
+    // Restaurer le tri
+    if (settings.contains("Sort/Column") && settings.contains("Sort/Order")) {
+        int column = settings.value("Sort/Column").toInt();
+        Qt::SortOrder order = static_cast<Qt::SortOrder>(settings.value("Sort/Order").toInt());
+        ui->taskWidget->sortItems(column, order);
     }
 
-    // on remet à jour les check box
-    ui->actionid->setChecked(print_option_[0]);
+    cache_fini_ = settings.value("CacheFini").toBool();
+    ui->cachefinibox->setChecked(cache_fini_);
 
-
-    if (sortColumn >= 0 && sortColumn < ui->taskWidget->columnCount()) {
-        ui->taskWidget->sortItems(sortColumn, sortOrder);
-    }
-*/
-    update_list();
 }
 
 void YaplukaWindow::saveSettings() const
@@ -331,28 +138,54 @@ void YaplukaWindow::saveSettings() const
     // Sauvegarder le nom du fichier
     settings.setValue("lastOpenedFile", currentFileName_);
 
-    // Sauvegarder les configurations des cases à cocher
-    settings.beginWriteArray("printOptions");
-    for (int i = 0; i < 5; ++i) {
-        settings.setArrayIndex(i);
-        settings.setValue("checked", print_option_[i]);
+
+    // Sauvegarde des noms des colonnes
+    settings.beginGroup("ColumnNames");
+    for (int i = 0; i < ui->taskWidget->columnCount(); ++i) {
+        settings.setValue(QString::number(i), ui->taskWidget->headerItem()->text(i));
     }
-    settings.endArray();
+    settings.endGroup();
 
-    // Sauvegarder l'option d'affichage des tâches terminées
-    settings.setValue("showFinishedTasks", affich_option_.affich_fini_);
+    // Sauvegarde de la visibilité des colonnes
+    settings.beginGroup("ColumnVisibility");
+    for (int i = 0; i < ui->taskWidget->columnCount(); ++i) {
+        settings.setValue(QString::number(i), !ui->taskWidget->isColumnHidden(i));
+    }
+    settings.endGroup();
 
-    // Obtenir l'état de tri actuel
-    //int sortColumn = ui->taskWidget->horizontalHeader()->sortIndicatorSection();
-    //Qt::SortOrder sortOrder = ui->taskWidget->horizontalHeader()->sortIndicatorOrder();
+    // Sauvegarde du tri
+    settings.setValue("Sort/Column", ui->taskWidget->sortColumn());
+    settings.setValue("Sort/Order", static_cast<int>(ui->taskWidget->header()->sortIndicatorOrder()));
 
-    // Sauvegarder l'état de tri
-    //settings.setValue("sortColumn", sortColumn);
-    //settings.setValue("sortOrder", sortOrder);
+    settings.setValue("CacheFini", cache_fini_);
 }
 
-void YaplukaWindow::on_categorie_widget_cellActivated(int row, int column)
-{
+void YaplukaWindow::showContextMenu(const QPoint &pos) {
+        // Créer un menu contextuel
+        QMenu contextMenu(tr("Context menu"), this);
 
+        // Ajouter des actions pour chaque colonne
+        for (int i = 0; i < ui->taskWidget->columnCount(); ++i) {
+
+            QTreeWidgetItem *headerItem = ui->taskWidget->headerItem();
+
+            QAction *action = new QAction(headerItem->text(i), this);
+            action->setCheckable(true);
+            action->setChecked(!ui->taskWidget->isColumnHidden(i));
+            connect(action, &QAction::triggered, [this, i](bool checked) {
+                ui->taskWidget->setColumnHidden(i, !checked);
+            });
+            contextMenu.addAction(action);
+        }
+
+        // Afficher le menu contextuel
+        contextMenu.exec(ui->taskWidget->viewport()->mapToGlobal(pos));
+    }
+
+
+void YaplukaWindow::on_cachefinibox_stateChanged(int arg1)
+{
+    cache_fini_ = arg1;
+    update_list();
 }
 
