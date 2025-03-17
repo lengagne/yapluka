@@ -106,11 +106,23 @@ void task::update_display(QTreeWidgetItem* task_widget, bool cache)
             task_widget->setText(7, modificationdate_.toString("yyyy-MM-dd"));
             task_widget->setText(8, QString::asprintf("%03d",percentage_));
 
+            if (cat_)
+            {
+                for (int i=0;i<9;i++)
+                {
+                    task_widget->setBackground(i,QBrush(QColor(cat_->bgColor_[0].toInt(), cat_->bgColor_[1].toInt(), cat_->bgColor_[2].toInt())));
+                    task_widget->setForeground(i,QBrush(QColor(cat_->fgColor_[0].toInt(), cat_->fgColor_[1].toInt(), cat_->fgColor_[2].toInt())));
+                }
+            }
+
         }
         for (task* c : sub_tasks_)
         {
-            QTreeWidgetItem *childitem = new QTreeWidgetItem(task_widget);
-            c->update_display(childitem,cache);
+            if ( c->percentage_<99 || !cache)
+            {
+                QTreeWidgetItem *childitem = new QTreeWidgetItem(task_widget);
+                c->update_display(childitem,cache);
+            }
         }
     }
 }
