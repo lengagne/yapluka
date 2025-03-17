@@ -14,7 +14,6 @@ YaplukaWindow::YaplukaWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-
     QVBoxLayout * verticalLayout = new QVBoxLayout;
     verticalLayout->addWidget(ui->cachefinibox);
 
@@ -34,10 +33,8 @@ YaplukaWindow::YaplukaWindow(QWidget *parent)
     loadSettings();
     read_file();
 
-
     ui->taskWidget->header()->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->taskWidget->header(), &QTreeWidget::customContextMenuRequested, this, &YaplukaWindow::showContextMenu);
-
     update_list();
 }
 
@@ -69,12 +66,12 @@ void YaplukaWindow::read_file()
 void YaplukaWindow::update_list()
 {
     ui->taskWidget->clear();
-    ui->taskWidget->setColumnCount(nb_colonnes_);
     tasks_.update_display(ui->taskWidget,cache_fini_);
 
     ui->categorie_widget->clear();
     categories_.update_display(ui->categorie_widget);
 
+    ui->cachefinibox->setChecked(cache_fini_);
 }
 
 
@@ -97,7 +94,6 @@ void YaplukaWindow::loadSettings()
 
     // Charger le nom du fichier
     currentFileName_ = settings.value("lastOpenedFile").toString();
-
     // Charger les noms des colonnes sauvegardés
     settings.beginGroup("ColumnNames");
     QStringList headers;
@@ -105,10 +101,8 @@ void YaplukaWindow::loadSettings()
         headers.append(settings.value(QString::number(i), QString("Colonne %1").arg(i)).toString());
     }
     settings.endGroup();
-
     // Appliquer les en-têtes récupérés
     ui->taskWidget->setHeaderLabels(headers);
-    qDebug()<<"headers : "<< headers;
 
     // Restaurer la visibilité des colonnes
     settings.beginGroup("ColumnVisibility");
@@ -117,17 +111,13 @@ void YaplukaWindow::loadSettings()
         ui->taskWidget->setColumnHidden(i, !visible);
     }
     settings.endGroup();
-
     // Restaurer le tri
     if (settings.contains("Sort/Column") && settings.contains("Sort/Order")) {
         int column = settings.value("Sort/Column").toInt();
         Qt::SortOrder order = static_cast<Qt::SortOrder>(settings.value("Sort/Order").toInt());
         ui->taskWidget->sortItems(column, order);
     }
-
     cache_fini_ = settings.value("CacheFini").toBool();
-    ui->cachefinibox->setChecked(cache_fini_);
-
 }
 
 void YaplukaWindow::saveSettings() const

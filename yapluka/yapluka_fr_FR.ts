@@ -35,7 +35,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="165"/>
+        <location filename="yaplukawindow.cpp" line="155"/>
         <source>Context menu</source>
         <translation type="unfinished"></translation>
     </message>

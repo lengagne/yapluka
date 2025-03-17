@@ -44,8 +44,6 @@ private:
 
     list_category categories_;
 
-    unsigned int nb_colonnes_;
-
     QString currentFileName_;
     QList<QAction*> columnActions;
 
