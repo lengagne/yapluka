@@ -37,7 +37,7 @@ void list_task::init(QString FileName,
 void list_task::update_display(QTreeWidget* task_widget,
                                 bool cache)
 {
-    task_widget->setHeaderLabels(QStringList() << "id"<<"tache"<<"categorie"<<"priorite"<<"date création"<<"date début"<<"date complétion"<<"date modif"<<"%" );
+    task_widget->setHeaderLabels(QStringList() << "status"<<"id"<<"tache"<<"categorie"<<"priorite"<<"date création"<<"date début"<<"date complétion"<<"date modif"<<"%" );
     if (master_)
         master_->update_display(task_widget->invisibleRootItem(),cache);
     task_widget->expandAll();

@@ -10,6 +10,8 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class YaplukaWindow; }
 QT_END_NAMESPACE
 
+
+
 class YaplukaWindow : public QMainWindow
 {
     Q_OBJECT

@@ -35,6 +35,14 @@ task::task(QDomElement root, int level)
         percentage_ = 0;
     }
 
+    QDomAttr statusAttr = root.attributeNode("status");
+    if (!statusAttr.isNull()) {
+        status_ = statusAttr.value().toInt();
+    } else {
+        status_ = 0;
+    }
+    qDebug()<<"status_ = "<<status_;
+
 
     QDomAttr creationdateAttr = root.attributeNode("creationDateTime");
     if (!creationdateAttr.isNull()) {
@@ -63,9 +71,8 @@ task::task(QDomElement root, int level)
         QString date =  modifdateAttr.value().left(23);;
         modificationdate_ = QDateTime::fromString(date, "yyyy-MM-dd HH:mm:ss.zzz");
     } else {
+
     }
-
-
 
     QDomNodeList rootElements = root.childNodes();
     for (int i = 0; i < rootElements.count(); ++i) {
@@ -92,23 +99,43 @@ void task::update_display(QTreeWidgetItem* task_widget, bool cache)
     {
         if (level_ )
         {
-            task_widget->setText(0, id_);
-            task_widget->setText(1, subject_);
-            if (cat_)
-                task_widget->setText(2, cat_->name_);
-            else
-                task_widget->setText(2, "");
+            // Stocker la priorité dans l'élément
+            task_widget->setData(0, Qt::UserRole + 1, percentage_ != 0);
 
-            task_widget->setText(3, QString::asprintf("%02d",priority_));
-            task_widget->setText(4, creationdate_.toString("yyyy-MM-dd"));
-            task_widget->setText(5, actualstartdate_.toString("yyyy-MM-dd"));
-            task_widget->setText(6, completiondate_.toString("yyyy-MM-dd"));
-            task_widget->setText(7, modificationdate_.toString("yyyy-MM-dd"));
-            task_widget->setText(8, QString::asprintf("%03d",percentage_));
+            // Assurez-vous que le QTreeWidget est accessible ici
+            QTreeWidget *treeWidget = task_widget->treeWidget();
+            if (treeWidget)
+            {
+                qDebug()<<"debut percentage_ = "<< percentage_;
+                // Appliquer le délégué à la colonne entière
+                CircleDelegate *circleDelegate = new CircleDelegate( percentage_ !=0 );
+                treeWidget->setItemDelegateForColumn(0, circleDelegate);
+
+                qDebug()<<"fin percentage_ = "<< percentage_;
+            }
+
+            task_widget->setText(1, id_);
+            task_widget->setText(2, subject_);
+            if (cat_)
+                task_widget->setText(3, cat_->name_);
+            else
+                task_widget->setText(3, "");
+
+            task_widget->setText(4, QString::asprintf("%02d",priority_));
+            task_widget->setText(5, creationdate_.toString("yyyy-MM-dd"));
+            task_widget->setText(6, actualstartdate_.toString("yyyy-MM-dd"));
+            task_widget->setText(7, completiondate_.toString("yyyy-MM-dd"));
+            task_widget->setText(8, modificationdate_.toString("yyyy-MM-dd"));
+
+            task_widget->setData(9, Qt::UserRole + 2, percentage_ );
+            ProgressBarDelegate *progressDelegate = new ProgressBarDelegate();
+            treeWidget->setItemDelegateForColumn(9, progressDelegate);
+            task_widget->setText(9, QString::asprintf("%03d",percentage_));
+
 
             if (cat_)
             {
-                for (int i=0;i<9;i++)
+                for (int i=0;i<11;i++)
                 {
                     task_widget->setBackground(i,QBrush(QColor(cat_->bgColor_[0].toInt(), cat_->bgColor_[1].toInt(), cat_->bgColor_[2].toInt())));
                     task_widget->setForeground(i,QBrush(QColor(cat_->fgColor_[0].toInt(), cat_->fgColor_[1].toInt(), cat_->fgColor_[2].toInt())));
