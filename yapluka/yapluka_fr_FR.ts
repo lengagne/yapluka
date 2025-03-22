@@ -20,22 +20,32 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.ui" line="119"/>
+        <location filename="yaplukawindow.ui" line="117"/>
+        <source>taches</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="yaplukawindow.ui" line="126"/>
         <source>Ouvrir</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.ui" line="124"/>
+        <location filename="yaplukawindow.ui" line="131"/>
         <source>Enregistrer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.ui" line="129"/>
+        <location filename="yaplukawindow.ui" line="136"/>
         <source>Quitter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="155"/>
+        <location filename="yaplukawindow.ui" line="141"/>
+        <source>nouvelle tache</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="yaplukawindow.cpp" line="182"/>
         <source>Context menu</source>
         <translation type="unfinished"></translation>
     </message>

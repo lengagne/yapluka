@@ -1,6 +1,11 @@
 #include "list_task.h"
 
 
+task* list_task::get_task( QString id)
+{
+    return master_->get_task(id);
+}
+
 void list_task::init(QString FileName,
                      list_category& categories_)
 {

@@ -4,6 +4,9 @@
 #include <qfiledialog.h>
 #include <qmessagebox.h>
 #include <QSettings>
+#include <QPushButton>
+
+#include "task_dialog.h"
 
 
 // to do, sauvegarder le nom de la colonne pour le tri (la c'est le numéro)
@@ -35,6 +38,12 @@ YaplukaWindow::YaplukaWindow(QWidget *parent)
 
     ui->taskWidget->header()->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->taskWidget->header(), &QTreeWidget::customContextMenuRequested, this, &YaplukaWindow::showContextMenu);
+
+
+    // Gérer l'ouverture d'une task
+    connect(ui->taskWidget, &QTreeWidget::itemDoubleClicked, this, &YaplukaWindow::editTask);
+
+
     update_list();
 }
 
@@ -63,6 +72,25 @@ void YaplukaWindow::read_file()
     update_list();
 }
 
+
+void YaplukaWindow::editTask(QTreeWidgetItem* item, int column) {
+    if (item) {
+        QString id = item->text(1);
+        qDebug() << "looking for id " << id;
+        task* task_to_edit = tasks_.get_task(id);
+
+        // Utilisez le constructeur approprié pour éditer une tâche existante
+        task_dialog* dialog = new task_dialog(task_to_edit, this);
+        connect(dialog, &task_dialog::accepted, this, &YaplukaWindow::updateTask);
+        dialog->exec();
+    }
+}
+
+void YaplukaWindow::updateTask( ) {
+    update_list();
+}
+
+
 void YaplukaWindow::update_list()
 {
     ui->taskWidget->clear();
@@ -72,6 +100,7 @@ void YaplukaWindow::update_list()
     categories_.update_display(ui->categorie_widget);
 
     ui->cachefinibox->setChecked(cache_fini_);
+    qDebug()<<"YaplukaWindow::update_list()";
 }
 
 
@@ -83,7 +112,6 @@ void YaplukaWindow::on_actionEnregistrer_triggered()
 
 void YaplukaWindow::on_actionQuitter_triggered()
 {
-    qDebug("On quitte l'application");
     QApplication::quit();
 }
 
@@ -122,7 +150,6 @@ void YaplukaWindow::loadSettings()
 
 void YaplukaWindow::saveSettings() const
 {
-    qDebug()<<"saveSettings()";
     QSettings settings("yapluka", "config");
 
     // Sauvegarder le nom du fichier
@@ -177,5 +204,19 @@ void YaplukaWindow::on_cachefinibox_stateChanged(int arg1)
 {
     cache_fini_ = arg1;
     update_list();
+}
+
+
+void YaplukaWindow::on_actionnouvelle_tache_triggered()
+{
+    task* new_task = new task();
+    tasks_.add_task(new_task);
+
+    // Utilisez le constructeur approprié pour éditer une tâche existante
+    task_dialog* dialog = new task_dialog(new_task, this);
+    connect(dialog, &task_dialog::accepted, this, &YaplukaWindow::updateTask);
+    dialog->exec();
+    qDebug()<<"ajoute id = "<< new_task->id_;
+    qDebug()<<"ajoute ptr = "<< new_task;
 }
 

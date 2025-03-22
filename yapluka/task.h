@@ -10,8 +10,14 @@
 
 #include <QStyledItemDelegate>
 #include <QPainter>
+#include <QDateTime>
+#include <QCryptographicHash>
+#include <QDebug>
+
 
 #include "list_category.h"
+
+QString generateUniqueId();
 
 class CircleDelegate : public QStyledItemDelegate {
 public:
@@ -48,7 +54,6 @@ public:
 
         // Récupérer la valeur de progression depuis le modèle
         int progress = index.data(Qt::UserRole+2).toInt();
-        qDebug()<<"progress ="<<progress;
 
         // Dessiner la barre de progression
         QRect rect = option.rect;
@@ -72,6 +77,16 @@ class task {
 public:
     task();
     task(QDomElement element, int level=0);
+
+    void add_sub_task( task* t)
+    {
+        sub_tasks_.append(t);
+    }
+
+    task* get_task( QString id);
+
+    void update(const QList<QLineEdit*>& editFields);
+
     void update_category(list_category& cats);
     void update_display(QTreeWidgetItem* task_widget, bool cache=true);
 
@@ -86,6 +101,10 @@ private:
     category* cat_ = nullptr;
     QString description_;
     QDateTime actualstartdate_, creationdate_,completiondate_,modificationdate_;
+
+    friend class task_dialog;
+    friend class YaplukaWindow;
+    friend class list_task;
 };
 
 #endif

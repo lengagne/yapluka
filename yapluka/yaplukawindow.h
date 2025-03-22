@@ -27,9 +27,17 @@ private slots:
 
     void on_actionQuitter_triggered();
 
+    void on_cachefinibox_stateChanged(int arg1);
+
     void showContextMenu(const QPoint &pos);
 
-    void on_cachefinibox_stateChanged(int arg1);
+//    void showTaskDetails(QTreeWidgetItem* item, int column);
+
+    void editTask(QTreeWidgetItem* item, int column);
+
+    void updateTask( );
+
+    void on_actionnouvelle_tache_triggered();
 
 private:
     void loadSettings();

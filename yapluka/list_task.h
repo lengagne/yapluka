@@ -7,7 +7,16 @@
 
 class list_task{
 public:
-    list_task(){ };
+    list_task(){
+    };
+
+    void add_task( task* t)
+    {
+        master_->add_sub_task(t);
+        qDebug()<<"list_task add_task id = "<< t->id_;
+    }
+
+    task* get_task( QString id);
 
     void init(QString FileName,
               list_category& categories_);

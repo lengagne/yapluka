@@ -112,7 +112,14 @@
     <addaction name="actionEnregistrer"/>
     <addaction name="actionQuitter"/>
    </widget>
+   <widget class="QMenu" name="menutaches">
+    <property name="title">
+     <string>taches</string>
+    </property>
+    <addaction name="actionnouvelle_tache"/>
+   </widget>
    <addaction name="menuFichier"/>
+   <addaction name="menutaches"/>
   </widget>
   <action name="actionOuvrir">
    <property name="text">
@@ -127,6 +134,11 @@
   <action name="actionQuitter">
    <property name="text">
     <string>Quitter</string>
+   </property>
+  </action>
+  <action name="actionnouvelle_tache">
+   <property name="text">
+    <string>nouvelle tache</string>
    </property>
   </action>
  </widget>

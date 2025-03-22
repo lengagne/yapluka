@@ -1,5 +1,30 @@
 #include "task.h"
 
+QString generateUniqueId() {
+    // Obtenez la date et l'heure actuelles
+    QDateTime currentDateTime = QDateTime::currentDateTime();
+    QString dateTimeString = currentDateTime.toString(Qt::ISODate);
+
+    // Combinez les informations pour créer une chaîne unique
+    QString uniqueString = dateTimeString;
+
+    // Utilisez un hachage pour générer un UUID basé sur cette chaîne
+    QByteArray hash = QCryptographicHash::hash(uniqueString.toUtf8(), QCryptographicHash::Sha1);
+
+    // Tronquez le hachage à 16 octets
+    if (hash.size() > 16) {
+        hash = hash.left(16);
+    }
+    return hash.toHex();
+}
+
+
+task::task()
+{
+    id_ = generateUniqueId();
+    creationdate_ = QDateTime::currentDateTime();
+    qDebug()<<"new task id = "<< id_;
+}
 
 task::task(QDomElement root, int level)
 {
@@ -41,7 +66,6 @@ task::task(QDomElement root, int level)
     } else {
         status_ = 0;
     }
-    qDebug()<<"status_ = "<<status_;
 
 
     QDomAttr creationdateAttr = root.attributeNode("creationDateTime");
@@ -81,9 +105,25 @@ task::task(QDomElement root, int level)
             task* item = new task(node.toElement(),level+1);
             sub_tasks_.append(item);
         }else if (node.isElement() && node.toElement().tagName()=="description") {
-            description_ = node.toElement().toText().data();
+            QDomElement ele = node.toElement();
+            description_ = ele.text();
         }
+
     }
+}
+
+task* task::get_task( QString id)
+{
+    if (id == id_)
+        return this;
+    task* out = nullptr;
+    for (task* c : sub_tasks_)
+    {
+        out = c->get_task(id);
+        if (out)
+            return out;
+    }
+    return nullptr;
 }
 
 void task::update_category(list_category& cats)
@@ -91,6 +131,16 @@ void task::update_category(list_category& cats)
     cat_ = cats.get_cat_for_id(id_);
     for (task* c : sub_tasks_)
         c->update_category(cats);
+}
+
+void task::update(const QList<QLineEdit*>& editFields)
+{
+    qDebug()<<"previous value of titre : "<< subject_;
+//        for (int i = 0; i < editFields.size(); ++i) {
+//            item->setText(i, editFields[i]->text());
+//        }
+    qDebug()<<"il faut mettre à jour l'item id : "<< id_ ;
+
 }
 
 void task::update_display(QTreeWidgetItem* task_widget, bool cache)
@@ -106,12 +156,9 @@ void task::update_display(QTreeWidgetItem* task_widget, bool cache)
             QTreeWidget *treeWidget = task_widget->treeWidget();
             if (treeWidget)
             {
-                qDebug()<<"debut percentage_ = "<< percentage_;
                 // Appliquer le délégué à la colonne entière
                 CircleDelegate *circleDelegate = new CircleDelegate( percentage_ !=0 );
                 treeWidget->setItemDelegateForColumn(0, circleDelegate);
-
-                qDebug()<<"fin percentage_ = "<< percentage_;
             }
 
             task_widget->setText(1, id_);
