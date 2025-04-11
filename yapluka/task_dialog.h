@@ -51,7 +51,6 @@ public:
     task_dialog(QWidget *parent = nullptr);
     task_dialog(task* t, QWidget *parent = nullptr);
 
-//    task* getTask() const;
 
 private slots:
     void accept() override;

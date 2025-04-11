@@ -13,7 +13,7 @@ public:
     void add_task( task* t)
     {
         master_->add_sub_task(t);
-        qDebug()<<"list_task add_task id = "<< t->id_;
+        qDebug()<<"list_task add_task id = "<< t->subject_;
     }
 
     task* get_task( QString id);

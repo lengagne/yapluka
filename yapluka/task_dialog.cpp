@@ -169,7 +169,7 @@ void task_dialog::accept() {
         currentTask->actualstartdate_ = actualStartDateEdit->dateTime();
         currentTask->creationdate_ = creationDateEdit->dateTime();
         currentTask->completiondate_ = completionDateEdit->dateTime();
-        currentTask->modificationdate_ = modificationDateEdit->dateTime();
+        currentTask->modificationdate_ = modificationDateEdit->dateTime();        
 
         qDebug()<<"on sauvegarde la tache : "<< currentTask->subject_;
         qDebug()<<"id : "<< currentTask->id_;

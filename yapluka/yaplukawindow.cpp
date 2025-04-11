@@ -210,7 +210,7 @@ void YaplukaWindow::on_cachefinibox_stateChanged(int arg1)
 void YaplukaWindow::on_actionnouvelle_tache_triggered()
 {
     task* new_task = new task();
-    tasks_.add_task(new_task);
+
 
     // Utilisez le constructeur approprié pour éditer une tâche existante
     task_dialog* dialog = new task_dialog(new_task, this);
@@ -218,5 +218,7 @@ void YaplukaWindow::on_actionnouvelle_tache_triggered()
     dialog->exec();
     qDebug()<<"ajoute id = "<< new_task->id_;
     qDebug()<<"ajoute ptr = "<< new_task;
+    tasks_.add_task(new_task);
+    update_list();
 }
 

@@ -80,7 +80,10 @@ public:
 
     void add_sub_task( task* t)
     {
+        t->level_ = level_+1;
         sub_tasks_.append(t);
+        qDebug()<<"add_sub_task to task subject_ = "<< subject_;
+        qDebug()<<"add_sub_task subject_ = "<< t->subject_;
     }
 
     task* get_task( QString id);

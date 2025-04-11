@@ -128,6 +128,7 @@ task* task::get_task( QString id)
 
 void task::update_category(list_category& cats)
 {
+    qDebug()<<"update : "<< subject_;
     cat_ = cats.get_cat_for_id(id_);
     for (task* c : sub_tasks_)
         c->update_category(cats);
