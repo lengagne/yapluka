@@ -13,6 +13,8 @@ public:
 
     void init(QString currentFileName_);
 
+    void save( QDomDocument& document, QDomElement& elroot);
+
     void update_display(QTreeWidget* cat_widget);
 
 private:

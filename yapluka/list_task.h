@@ -21,6 +21,8 @@ public:
     void init(QString FileName,
               list_category& categories_);
 
+    void save( QDomDocument& document, QDomElement& elroot);
+
     void update_display(QTreeWidget* task_widget,
                         bool cache = true);
 private:

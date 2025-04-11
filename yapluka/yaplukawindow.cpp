@@ -106,7 +106,43 @@ void YaplukaWindow::update_list()
 
 void YaplukaWindow::on_actionEnregistrer_triggered()
 {
-   // qDebug("On enregistre un fichier");
+   qDebug("On enregistre un fichier");
+   currentFileName_ = QFileDialog::getSaveFileName(this, "Enregistrer dans le fichier", "", "Tous les fichiers (*.tsk)");
+
+   // Vérifier et ajouter l'extension .txt si nécessaire
+   QFileInfo fileInfo(currentFileName_);
+   QString suffix = fileInfo.suffix();
+   if (suffix.isEmpty() || suffix.toLower() != "tsk") {
+       currentFileName_.append(".tsk");
+   }
+
+   qDebug()<<"on va enregistrer dans :"<< currentFileName_;
+
+   // Créer un document XML
+   QDomDocument document;
+   // Ajouter l'en-tête XML
+   QDomProcessingInstruction xmlHeader = document.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"utf-8\"");
+   document.appendChild(xmlHeader);
+
+//   // Ajouter l'instruction de traitement pour taskcoach
+//   QDomProcessingInstruction taskcoachHeader = document.createProcessingInstruction("taskcoach", "release=\"1.4.6\" tskversion=\"37\"");
+//   document.appendChild(taskcoachHeader);
+
+   QDomElement eltasks = document.createElement("tasks");
+   document.appendChild(eltasks);
+
+   tasks_.save(document,eltasks);
+   categories_.save(document,eltasks);
+
+   // Enregistrer le document XML dans un fichier
+   QFile file(currentFileName_);
+   if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+       QTextStream stream(&file);
+       stream << document.toString();
+       file.close();
+   } else {
+       QMessageBox::warning(nullptr, "Erreur", "Impossible d'ouvrir le fichier pour écrire.");
+   }
 }
 
 
@@ -216,8 +252,6 @@ void YaplukaWindow::on_actionnouvelle_tache_triggered()
     task_dialog* dialog = new task_dialog(new_task, this);
     connect(dialog, &task_dialog::accepted, this, &YaplukaWindow::updateTask);
     dialog->exec();
-    qDebug()<<"ajoute id = "<< new_task->id_;
-    qDebug()<<"ajoute ptr = "<< new_task;
     tasks_.add_task(new_task);
     update_list();
 }

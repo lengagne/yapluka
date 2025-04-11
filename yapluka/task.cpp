@@ -126,9 +126,36 @@ task* task::get_task( QString id)
     return nullptr;
 }
 
+void task::save(  QDomDocument& document,
+                  QDomElement& elroot)
+{
+    if (level_)
+    {
+        elroot.setAttribute("actualstartdate",actualstartdate_.toString("yyyy-MM-dd HH:mm:ss.zzz"));
+        elroot.setAttribute("completiondate",completiondate_.toString("yyyy-MM-dd HH:mm:ss.zzz"));
+        elroot.setAttribute("creationDateTime",creationdate_.toString("yyyy-MM-dd HH:mm:ss.zzz"));
+        elroot.setAttribute("modificationDateTime",modificationdate_.toString("yyyy-MM-dd HH:mm:ss.zzz"));
+        elroot.setAttribute("id",id_);
+        elroot.setAttribute("percentageComplete",percentage_);
+        elroot.setAttribute("priority",priority_);
+        elroot.setAttribute("status",status_);
+        elroot.setAttribute("subject",subject_);
+        QDomElement eldescription = document.createElement("description");
+        QDomText text1 = document.createTextNode(description_);
+        eldescription.appendChild(text1);
+        elroot.appendChild(eldescription);
+    }
+    for (task* c : sub_tasks_)
+    {
+        QDomElement eltask = document.createElement("task");
+        c->save(document, eltask);
+        elroot.appendChild(eltask);
+    }
+
+}
+
 void task::update_category(list_category& cats)
 {
-    qDebug()<<"update : "<< subject_;
     cat_ = cats.get_cat_for_id(id_);
     for (task* c : sub_tasks_)
         c->update_category(cats);

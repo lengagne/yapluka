@@ -39,6 +39,14 @@ void list_task::init(QString FileName,
 
 }
 
+void list_task::save( QDomDocument& document,
+                      QDomElement& elroot)
+{
+    qDebug()<<"list_task->save";
+    master_->save(document,elroot);
+
+}
+
 void list_task::update_display(QTreeWidget* task_widget,
                                 bool cache)
 {

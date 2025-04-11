@@ -42,6 +42,12 @@ void list_category::init(QString FileName)
 
 }
 
+void list_category::save( QDomDocument& document,
+                          QDomElement& elroot)
+{
+    qDebug()<<"list_category->save";
+}
+
 void list_category::update_display(QTreeWidget* cat_widget)
 {
     cat_widget->setHeaderLabels(QStringList() << "Nom" );

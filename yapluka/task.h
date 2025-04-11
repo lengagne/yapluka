@@ -88,6 +88,9 @@ public:
 
     task* get_task( QString id);
 
+    void save(  QDomDocument& document,
+                QDomElement& elroot);
+
     void update(const QList<QLineEdit*>& editFields);
 
     void update_category(list_category& cats);
