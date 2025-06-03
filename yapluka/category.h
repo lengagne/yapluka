@@ -19,6 +19,10 @@ public:
 
     category* get_cat_for_id( QString id);
 
+    void get_categories(QList<QString> & list);
+
+    void save( QDomDocument& document, QDomElement& elroot);
+
     void update_display(QTreeWidgetItem* cat_widget);
 
     QList<QString> ids_;

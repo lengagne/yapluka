@@ -86,6 +86,8 @@ public:
         qDebug()<<"add_sub_task subject_ = "<< t->subject_;
     }
 
+    void delete_task(task* t);
+
     task* get_task( QString id);
 
     void save(  QDomDocument& document,

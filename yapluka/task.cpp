@@ -23,6 +23,7 @@ task::task()
 {
     id_ = generateUniqueId();
     creationdate_ = QDateTime::currentDateTime();
+    percentage_=0;
     qDebug()<<"new task id = "<< id_;
 }
 
@@ -109,6 +110,15 @@ task::task(QDomElement root, int level)
             description_ = ele.text();
         }
 
+    }
+}
+
+void task::delete_task(task* t)
+{
+    sub_tasks_.removeOne(t);
+    for (task* c : sub_tasks_)
+    {
+        c->delete_task(t);
     }
 }
 
@@ -207,6 +217,8 @@ void task::update_display(QTreeWidgetItem* task_widget, bool cache)
             treeWidget->setItemDelegateForColumn(9, progressDelegate);
             task_widget->setText(9, QString::asprintf("%03d",percentage_));
 
+            task_widget->setTextAlignment(4, Qt::AlignCenter);
+            task_widget->setTextAlignment(9, Qt::AlignCenter);
 
             if (cat_)
             {

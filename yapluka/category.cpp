@@ -74,6 +74,56 @@ category* category::get_cat_for_id( QString id)
     return 0;
 }
 
+void category::get_categories(QList<QString> & list)
+{
+     for (category* c : children_)
+     {
+         list.append(c->name_);
+         c->get_categories(list);
+     }
+}
+
+void category::save(  QDomDocument& document,
+                    QDomElement& elroot)
+{
+    if (level_)
+    {
+        QDomElement elcat = document.createElement("category");
+        elcat.setAttribute("subject",name_);
+        elcat.setAttribute("bgColor", "(" +bgColor_.join(", ") + ")");
+        elcat.setAttribute("fgColor", "(" +fgColor_.join(", ") + ")");
+
+        QString idsString;
+        // Concaténer chaque élément de la liste en une seule chaîne
+        for (int i = 0; i < ids_.size(); ++i) {
+            idsString += ids_[i];
+            // Ajouter un séparateur si ce n'est pas le dernier élément
+            if (i < ids_.size() - 1) {
+                idsString += " "; // Vous pouvez changer le séparateur selon vos besoins
+            }
+        }
+        elcat.setAttribute("categorizables", idsString);
+
+
+        for (category* c : children_)
+        {
+            c->save(document, elcat);
+            elroot.appendChild(elcat);
+        }
+
+        elroot.appendChild(elcat);
+    }else
+    {
+        for (category* c : children_)
+        {
+            c->save(document, elroot);
+        }
+
+    }
+
+
+}
+
 void category::update_display(QTreeWidgetItem* cat_widget)
 {
     if (level_)

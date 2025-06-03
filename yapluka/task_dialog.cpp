@@ -1,84 +1,3 @@
-/*
-#include "task_dialog.h"
-#include <QTextEdit>
-
-
-task_dialog::task_dialog(QTreeWidgetItem* taskItem,
-                         task* task,
-                         QWidget* parent) : QDialog(parent)
-{
-    QVBoxLayout* layout = new QVBoxLayout(this);
-
-    QLabel* idQ = new QLabel("id:" + task->id_, this);
-    layout->addWidget(idQ);
-
-    QHBoxLayout * titreLayout = new QHBoxLayout;
-    QLabel* titreQ = new QLabel("titre : ", this);
-    QLineEdit* titreEdit = new QLineEdit(task->subject_, this);
-    editFields_.append(titreEdit);
-    titreLayout->addWidget(titreQ);
-    titreLayout->addWidget(titreEdit);
-    layout->addLayout(titreLayout);
-
-    QHBoxLayout * priority_Layout = new QHBoxLayout;
-    QLabel* priorityQ = new QLabel("priorité : ", this);
-    QLineEdit* priorityEdit = new QLineEdit(QString::number(task->priority_), this);
-    editFields_.append(priorityEdit);
-    priority_Layout->addWidget(priorityQ);
-    priority_Layout->addWidget(priorityEdit);
-    layout->addLayout(priority_Layout);
-
-    QHBoxLayout * pourcent_Layout = new QHBoxLayout;
-    QLabel* pourcentQ = new QLabel("pourcentage : ", this);
-    QLineEdit* pourcentEdit = new QLineEdit(QString::number(task->percentage_), this);
-
-    pourcent_Layout->addWidget(pourcentQ);
-
-    // Créer un QSlider pour le pourcentage
-    QSlider* pourcentSlider = new QSlider(Qt::Horizontal, this);
-    pourcentSlider->setMinimum(0);
-    pourcentSlider->setMaximum(100);
-    pourcentSlider->setValue(task->percentage_);
-
-    pourcent_Layout->addWidget(pourcentSlider);
-    pourcent_Layout->addWidget(pourcentEdit);
-
-    layout->addLayout(pourcent_Layout);
-
-
-    // Connecter le signal valueChanged du QSlider à une fonction qui met à jour le pourcentage
-    connect(pourcentSlider, &QSlider::valueChanged, [=](int value) {
-        task->percentage_ = value;
-        pourcentEdit->setText(QString::number(task->percentage_));
-        // Vous pouvez également mettre à jour l'affichage ou d'autres éléments ici si nécessaire
-    });
-    editFields_.append(pourcentEdit);
-
-    QLabel* descriptionQ = new QLabel("description : ", this);
-    QTextEdit* descriptionEdit = new QTextEdit(task->description_, this);
-
-    layout->addWidget(descriptionQ);
-    layout->addWidget(descriptionEdit);
-    editFields_.append(descriptionEdit);
-
-    // Ajouter un bouton pour sauvegarder les modifications
-    QPushButton* saveButton = new QPushButton("Save", this);
-    layout->addWidget(saveButton);
-
-    setLayout(layout);
-    setWindowTitle("Edit Task");
-
-    connect(saveButton, &QPushButton::clicked, this, &task_dialog::saveChanges);
-}
-
-void task_dialog::saveChanges()
-{
-    // Émettre un signal avec les nouvelles données
-    emit taskEdited(editFields_);
-    accept();
-}
-
-*/
 #include "task_dialog.h"
 #include <QVBoxLayout>
 #include <QFormLayout>
@@ -94,8 +13,9 @@ task_dialog::task_dialog(QWidget *parent)
     initUI();
 }
 
-task_dialog::task_dialog(task* t, QWidget *parent)
-    : QDialog(parent), currentTask(t) {
+task_dialog::task_dialog(list_category* lcat,
+                         task* t, QWidget *parent)
+    : QDialog(parent), currentTask(t), lcat_(lcat) {
     initUI();
     loadTaskData();
 }
@@ -108,17 +28,35 @@ void task_dialog::initUI() {
     subjectEdit = new QLineEdit(this);
     prioritySpinBox = new QSpinBox(this);
     idEdit = new QLabel(this);
+    cat_of = new QComboBox(this);
+    QList<QString> cats;
+    lcat_->get_categories(cats);
+    int cpt = 1;
+    for (const QString &item : cats) {
+        cat_of->addItem(item, cpt++);
+    }
+
+    // il faut supprimer de l'ancienne categorie et ajouter a la nouvelle
+
 //    statusComboBox = new QComboBox(this);
     percentageSpinBox = new QSpinBox(this);
+    percentageSpinBox->setMaximum(100);
     descriptionEdit = new QTextEdit(this);
     actualStartDateEdit = new QDateTimeEdit(this);
     creationDateEdit = new QDateTimeEdit(this);
     completionDateEdit = new QDateTimeEdit(this);
     modificationDateEdit = new QDateTimeEdit(this);
 
+    // Désactiver les champs de date pour qu'ils ne soient pas modifiables
+    actualStartDateEdit->setEnabled(false);
+    creationDateEdit->setEnabled(false);
+    completionDateEdit->setEnabled(false);
+    modificationDateEdit->setEnabled(false);
+
     formLayout->addRow("Subject:", subjectEdit);
     formLayout->addRow("Priority:", prioritySpinBox);
     formLayout->addRow("ID:", idEdit);
+    formLayout->addRow("Catégorie:", cat_of);
 //    formLayout->addRow("Status:", statusComboBox);
     formLayout->addRow("Percentage:", percentageSpinBox);
     formLayout->addRow("Description:", descriptionEdit);
@@ -177,6 +115,3 @@ void task_dialog::accept() {
     QDialog::accept();
 }
 
-/*task* task_dialog::getTask() const {
-    return currentTask;
-}*/

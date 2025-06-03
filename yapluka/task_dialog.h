@@ -49,7 +49,7 @@ class task_dialog : public QDialog {
 
 public:
     task_dialog(QWidget *parent = nullptr);
-    task_dialog(task* t, QWidget *parent = nullptr);
+    task_dialog(list_category* lcat, task* t, QWidget *parent = nullptr);
 
 
 private slots:
@@ -62,7 +62,7 @@ private:
     QLineEdit *subjectEdit;
     QSpinBox *prioritySpinBox;
     QLabel *idEdit;
-    QComboBox *statusComboBox;
+    QComboBox* cat_of;
     QSpinBox *percentageSpinBox;
     QTextEdit *descriptionEdit;
     QDateTimeEdit *actualStartDateEdit;
@@ -71,6 +71,7 @@ private:
     QDateTimeEdit *modificationDateEdit;
 
     task* currentTask;
+    list_category* lcat_;
 };
 
 #endif // TASK_DIALOG_H

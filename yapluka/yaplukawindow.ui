@@ -30,15 +30,44 @@
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
-     <item alignment="Qt::AlignLeft|Qt::AlignTop">
-      <widget class="QCheckBox" name="cachefinibox">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="text">
-        <string>cache fini</string>
-       </property>
-      </widget>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QCheckBox" name="cachefinibox">
+         <property name="text">
+          <string>cacher tâches terminées</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="BoutonNouvelleTache">
+         <property name="text">
+          <string>Nouvelle Tâche</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="BoutonEditTache">
+         <property name="text">
+          <string>Edit Tâche</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="BoutonFinirTache">
+         <property name="text">
+          <string>Finir Tâche</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="BoutonSupprimerTache">
+         <property name="text">
+          <string>Supprimer Tâche</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
@@ -110,6 +139,7 @@
     </property>
     <addaction name="actionOuvrir"/>
     <addaction name="actionEnregistrer"/>
+    <addaction name="actionEnresitrer_sous"/>
     <addaction name="actionQuitter"/>
    </widget>
    <widget class="QMenu" name="menutaches">
@@ -139,6 +169,11 @@
   <action name="actionnouvelle_tache">
    <property name="text">
     <string>nouvelle tache</string>
+   </property>
+  </action>
+  <action name="actionEnresitrer_sous">
+   <property name="text">
+    <string>Enresitrer sous</string>
    </property>
   </action>
  </widget>

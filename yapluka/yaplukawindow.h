@@ -3,6 +3,12 @@
 
 #include <QMainWindow>
 #include <QXmlStreamReader>
+
+#include <QContextMenuEvent>
+#include <QMenu>
+#include <QAction>
+#include <QTreeWidgetItem>
+
 #include "list_category.h"
 #include "list_task.h"
 
@@ -29,6 +35,8 @@ private slots:
 
     void on_cachefinibox_stateChanged(int arg1);
 
+    void save();
+
     void showContextMenu(const QPoint &pos);
 
 //    void showTaskDetails(QTreeWidgetItem* item, int column);
@@ -39,7 +47,24 @@ private slots:
 
     void on_actionnouvelle_tache_triggered();
 
+    void on_action_finish_tache_triggered();
+
+    void onActionDeleteTask();
+
+    void onActionEdit();
+    void on_actionEnresitrer_sous_triggered();
+
+    void on_BoutonNouvelleTache_clicked();
+
+    void on_BoutonEditTache_clicked();
+
+    void on_BoutonFinirTache_clicked();
+
+    void on_BoutonSupprimerTache_clicked();
+
 private:
+    void contextMenuEvent(QContextMenuEvent *event) override ;
+
     void loadSettings();
 
     void read_file();
@@ -56,6 +81,7 @@ private:
 
     QString currentFileName_;
     QList<QAction*> columnActions;
+    QSize window_size_;
 
     bool cache_fini_ = true;
 

@@ -42,9 +42,7 @@ void list_task::init(QString FileName,
 void list_task::save( QDomDocument& document,
                       QDomElement& elroot)
 {
-    qDebug()<<"list_task->save";
     master_->save(document,elroot);
-
 }
 
 void list_task::update_display(QTreeWidget* task_widget,
@@ -57,4 +55,8 @@ void list_task::update_display(QTreeWidget* task_widget,
 
     // Activation du tri par colonne
     task_widget->setSortingEnabled(true);
+
+    QTreeWidgetItem *headerItem = task_widget->headerItem();
+    headerItem->setTextAlignment(4, Qt::AlignCenter);
+    headerItem->setTextAlignment(9, Qt::AlignCenter);
 }

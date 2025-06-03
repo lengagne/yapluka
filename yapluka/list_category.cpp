@@ -10,6 +10,13 @@ category* list_category::get_cat_for_id( QString id)
     return master_->get_cat_for_id( id);
 }
 
+
+void list_category::get_categories( QList<QString> & list)
+{
+    list = {"","Banana"};
+    master_->get_categories(list);
+}
+
 void list_category::init(QString FileName)
 {
     // Créer un document DOM
@@ -45,7 +52,7 @@ void list_category::init(QString FileName)
 void list_category::save( QDomDocument& document,
                           QDomElement& elroot)
 {
-    qDebug()<<"list_category->save";
+    master_->save(document,elroot);
 }
 
 void list_category::update_display(QTreeWidget* cat_widget)

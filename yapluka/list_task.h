@@ -16,6 +16,11 @@ public:
         qDebug()<<"list_task add_task id = "<< t->subject_;
     }
 
+    void delete_task(task* t)
+    {
+        master_->delete_task(t);
+    }
+
     task* get_task( QString id);
 
     void init(QString FileName,
