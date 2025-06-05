@@ -29,10 +29,9 @@ void task_dialog::initUI() {
     prioritySpinBox = new QSpinBox(this);
     idEdit = new QLabel(this);
     cat_of = new QComboBox(this);
-    QList<QString> cats;
-    lcat_->get_categories(cats);
+    lcat_->get_categories(cats_);
     int cpt = 1;
-    for (const QString &item : cats) {
+    for (const QString &item : cats_) {
         cat_of->addItem(item, cpt++);
     }
 
@@ -57,7 +56,6 @@ void task_dialog::initUI() {
     formLayout->addRow("Priority:", prioritySpinBox);
     formLayout->addRow("ID:", idEdit);
     formLayout->addRow("Catégorie:", cat_of);
-//    formLayout->addRow("Status:", statusComboBox);
     formLayout->addRow("Percentage:", percentageSpinBox);
     formLayout->addRow("Description:", descriptionEdit);
     formLayout->addRow("Actual Start Date:", actualStartDateEdit);
@@ -84,16 +82,24 @@ void task_dialog::initUI() {
 
 void task_dialog::loadTaskData() {
     if (currentTask) {
+        qDebug()<<"loadTaskData";
         subjectEdit->setText(currentTask->subject_);
         prioritySpinBox->setValue(currentTask->priority_);
         idEdit->setText(currentTask->id_);
-//        statusComboBox->setCurrentIndex(currentTask->status_);
         percentageSpinBox->setValue(currentTask->percentage_);
         descriptionEdit->setText(currentTask->description_);
         actualStartDateEdit->setDateTime(currentTask->actualstartdate_);
         creationDateEdit->setDateTime(currentTask->creationdate_);
         completionDateEdit->setDateTime(currentTask->completiondate_);
         modificationDateEdit->setDateTime(currentTask->modificationdate_);
+        if(currentTask->cat_)
+        {
+            int index = cats_.indexOf(currentTask->cat_->name_);
+            if (index !=-1)
+            {
+                cat_of->setCurrentIndex( index );
+            }
+        }
     }
 }
 
@@ -107,11 +113,10 @@ void task_dialog::accept() {
         currentTask->actualstartdate_ = actualStartDateEdit->dateTime();
         currentTask->creationdate_ = creationDateEdit->dateTime();
         currentTask->completiondate_ = completionDateEdit->dateTime();
-        currentTask->modificationdate_ = modificationDateEdit->dateTime();        
-
-        qDebug()<<"on sauvegarde la tache : "<< currentTask->subject_;
-        qDebug()<<"id : "<< currentTask->id_;
+        currentTask->modificationdate_ = modificationDateEdit->dateTime();
+        currentTask->cat_ = lcat_->get_cat_by_name(cat_of->currentText());
     }
     QDialog::accept();
 }
+
 

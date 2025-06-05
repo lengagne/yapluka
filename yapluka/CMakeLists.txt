@@ -74,3 +74,7 @@ set_target_properties(yapluka PROPERTIES
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(yapluka)
 endif()
+
+install( TARGETS yapluka  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+
+

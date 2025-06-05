@@ -72,6 +72,8 @@ private:
 
     task* currentTask;
     list_category* lcat_;
+
+    QList<QString> cats_;
 };
 
 #endif // TASK_DIALOG_H

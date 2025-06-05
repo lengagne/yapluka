@@ -98,6 +98,7 @@ void YaplukaWindow::editTask(QTreeWidgetItem* item, int column) {
         connect(dialog, &task_dialog::accepted, this, &YaplukaWindow::updateTask);
         dialog->exec();
     }
+    update_list();
     save();
 }
 

@@ -4,37 +4,37 @@
 <context>
     <name>YaplukaWindow</name>
     <message>
-        <location filename="yaplukawindow.cpp" line="151"/>
+        <location filename="yaplukawindow.cpp" line="152"/>
         <source>Supprimer l&apos;élément</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="152"/>
+        <location filename="yaplukawindow.cpp" line="153"/>
         <source>Êtes-vous sûr de vouloir supprimer cet élément ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="168"/>
+        <location filename="yaplukawindow.cpp" line="169"/>
         <source>Suppression</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="168"/>
+        <location filename="yaplukawindow.cpp" line="169"/>
         <source>Aucun élément sélectionné.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="224"/>
+        <location filename="yaplukawindow.cpp" line="225"/>
         <source>Finir la tâche</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="225"/>
+        <location filename="yaplukawindow.cpp" line="226"/>
         <source>Êtes-vous sûr de vouloir finir cette tâche ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="331"/>
+        <location filename="yaplukawindow.cpp" line="332"/>
         <source>Context menu</source>
         <translation type="unfinished"></translation>
     </message>

@@ -13,8 +13,15 @@ category* list_category::get_cat_for_id( QString id)
 
 void list_category::get_categories( QList<QString> & list)
 {
-    list = {"","Banana"};
+    list = {""};
     master_->get_categories(list);
+}
+
+category* list_category::get_cat_by_name( QString cat_name)
+{
+    category* cat = master_->get_cat_by_name( cat_name);
+    if (cat)    return cat;
+    return master_;
 }
 
 void list_category::init(QString FileName)

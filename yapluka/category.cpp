@@ -74,6 +74,20 @@ category* category::get_cat_for_id( QString id)
     return 0;
 }
 
+category* category::get_cat_by_name( QString cat_name)
+{
+    if (name_ == cat_name)  return this;
+    for (category* c : children_)
+    {
+        category* cat = c->get_cat_by_name(cat_name);
+        if (cat)
+        {
+            return cat;
+        }
+    }
+    return 0;
+}
+
 void category::get_categories(QList<QString> & list)
 {
      for (category* c : children_)

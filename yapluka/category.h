@@ -19,6 +19,8 @@ public:
 
     category* get_cat_for_id( QString id);
 
+    category* get_cat_by_name( QString cat_name);
+
     void get_categories(QList<QString> & list);
 
     void save( QDomDocument& document, QDomElement& elroot);
