@@ -7,6 +7,15 @@
 #include <QPushButton>
 #include <QInputDialog>
 #include <QLineEdit>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QFormLayout>
+#include <QComboBox>
+#include <QLineEdit>
+#include <QFontDialog>
+#include <QVBoxLayout>
+#include <QColorDialog>
+#include <QColor>
 
 #include "task_dialog.h"
 
@@ -18,6 +27,15 @@ YaplukaWindow::YaplukaWindow(QWidget *parent)
     , ui(new Ui::YaplukaWindow)
 {
     ui->setupUi(this);
+
+    ui->categorie_widget->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    connect(ui->categorie_widget,
+            &QWidget::customContextMenuRequested,
+            this,
+            &YaplukaWindow::menuCategorie);
+
+
 
     setWindowTitle("Yapluka");
 
@@ -178,7 +196,217 @@ void YaplukaWindow::contextMenuEvent(QContextMenuEvent *event)
     menu.exec(event->globalPos());
 }
 
+void YaplukaWindow::editerCategorie()
+{
+    auto *item = ui->categorie_widget->currentItem();
+    if (!item)
+        return;
 
+    category *cat = item->data(0, Qt::UserRole).value<category*>();
+    if (!cat)
+        return;
+
+    QDialog dialog(this);
+    dialog.setWindowTitle(tr("Éditer la catégorie"));
+
+    auto *layout = new QVBoxLayout(&dialog);
+    auto *form = new QFormLayout;
+    layout->addLayout(form);
+
+    auto *nomEdit = new QLineEdit(cat->name_, &dialog);
+    form->addRow(tr("Nom :"), nomEdit);
+
+    auto *parentCombo = new QComboBox(&dialog);
+    parentCombo->addItem(
+        tr("(Aucune — à la racine)"),
+        QVariant::fromValue(static_cast<category*>(nullptr))
+    );
+
+    category *parentActuel = categories_.parent_de(cat);
+
+    for (category *candidate : categories_.toutes_categories()) {
+        // Exclure la catégorie et tous ses descendants.
+        bool interdit = false;
+
+        for (category *p = candidate; p; p = categories_.parent_de(p)) {
+            if (p == cat) {
+                interdit = true;
+                break;
+            }
+        }
+
+        if (interdit)
+            continue;
+
+        // Afficher le chemin pour distinguer les catégories.
+        QString chemin = candidate->name_;
+
+        for (category *p = categories_.parent_de(candidate);
+             p;
+             p = categories_.parent_de(p)) {
+            chemin.prepend(p->name_ + " / ");
+        }
+
+        parentCombo->addItem(chemin, QVariant::fromValue(candidate));
+
+        if (candidate == parentActuel)
+            parentCombo->setCurrentIndex(parentCombo->count() - 1);
+    }
+
+    form->addRow(tr("Catégorie parent :"), parentCombo);
+
+    QFont police = cat->font_;
+
+    auto *policeBouton = new QPushButton(tr("Choisir la police…"), &dialog);
+    policeBouton->setFont(police);
+    form->addRow(tr("Police :"), policeBouton);
+
+    connect(policeBouton, &QPushButton::clicked, &dialog, [&]() {
+        bool ok = false;
+
+        QFont choix = QFontDialog::getFont(
+            &ok, police, &dialog, tr("Police de la catégorie")
+        );
+
+        if (ok) {
+            police = choix;
+            policeBouton->setFont(police);
+        }
+    });
+
+    // Couleurs temporaires : Annuler ne modifiera pas la catégorie.
+    auto lireCouleur = [](const QStringList &valeurs,
+                        const QColor &defaut) -> QColor {
+        if (valeurs.size() < 3)
+            return defaut;
+
+        QColor couleur(
+            valeurs[0].toInt(),
+            valeurs[1].toInt(),
+            valeurs[2].toInt()
+        );
+
+        return couleur.isValid() ? couleur : defaut;
+    };
+
+    QColor couleurFond = lireCouleur(cat->bgColor_, QColor(Qt::white));
+    QColor couleurTexte = lireCouleur(cat->fgColor_, QColor(Qt::black));
+
+    auto *fondBouton = new QPushButton(tr("Choisir…"), &dialog);
+    auto *texteBouton = new QPushButton(tr("Choisir…"), &dialog);
+
+    form->addRow(tr("Couleur du fond :"), fondBouton);
+    form->addRow(tr("Couleur du texte :"), texteBouton);
+
+    // Aperçu des deux couleurs sur le bouton de police existant.
+    auto actualiserApercu = [&]() {
+        fondBouton->setText(couleurFond.name());
+        texteBouton->setText(couleurTexte.name());
+
+        policeBouton->setStyleSheet(
+            QString("QPushButton { background-color: %1; color: %2; }")
+                .arg(couleurFond.name())
+                .arg(couleurTexte.name())
+        );
+    };
+
+    connect(fondBouton, &QPushButton::clicked, &dialog, [&]() {
+        QColor choix = QColorDialog::getColor(
+            couleurFond, &dialog, tr("Couleur du fond")
+        );
+
+        if (choix.isValid()) {
+            couleurFond = choix;
+            actualiserApercu();
+        }
+    });
+
+    connect(texteBouton, &QPushButton::clicked, &dialog, [&]() {
+        QColor choix = QColorDialog::getColor(
+            couleurTexte, &dialog, tr("Couleur du texte")
+        );
+
+        if (choix.isValid()) {
+            couleurTexte = choix;
+            actualiserApercu();
+        }
+    });
+
+    actualiserApercu();
+
+    auto *boutons = new QDialogButtonBox(
+        QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+        &dialog
+    );
+
+    layout->addWidget(boutons);
+
+    connect(boutons, &QDialogButtonBox::rejected,
+            &dialog, &QDialog::reject);
+
+    connect(boutons, &QDialogButtonBox::accepted, &dialog, [&]() {
+        QString nouveauNom = nomEdit->text().trimmed();
+
+        if (nouveauNom.isEmpty()) {
+            QMessageBox::warning(
+                &dialog, tr("Nom invalide"),
+                tr("Le nom ne peut pas être vide.")
+            );
+            return;
+        }
+
+        // L'éditeur de tâches retrouve les catégories par leur nom.
+        // Éviter donc d'introduire un doublon lors du renommage.
+        if (nouveauNom != cat->name_) {
+            for (category *autre : categories_.toutes_categories()) {
+                if (autre != cat && autre->name_ == nouveauNom) {
+                    QMessageBox::warning(
+                        &dialog, tr("Nom invalide"),
+                        tr("Une catégorie porte déjà ce nom.")
+                    );
+                    return;
+                }
+            }
+        }
+
+        category *nouveauParent =
+            parentCombo->currentData().value<category*>();
+
+        if (!categories_.changer_parent(cat, nouveauParent)) {
+            QMessageBox::warning(
+                &dialog, tr("Parent invalide"),
+                tr("Impossible de déplacer cette catégorie.")
+            );
+            return;
+        }
+
+        // Conserver le filtre si la catégorie filtrée est renommée.
+        if (category_filter_ == cat->name_)
+            category_filter_ = nouveauNom;
+
+        cat->name_ = nouveauNom;
+        cat->font_ = police;
+
+        cat->bgColor_ = QStringList{
+            QString::number(couleurFond.red()),
+            QString::number(couleurFond.green()),
+            QString::number(couleurFond.blue())
+        };
+
+        cat->fgColor_ = QStringList{
+            QString::number(couleurTexte.red()),
+            QString::number(couleurTexte.green()),
+            QString::number(couleurTexte.blue())
+        };
+
+        dialog.accept();
+    });
+
+    if (dialog.exec() == QDialog::Accepted) {
+        update_list();
+        save();
+    }
+}
 
 void YaplukaWindow::editTask(QTreeWidgetItem* item, int column) {
     if (item) {
@@ -235,6 +463,30 @@ void YaplukaWindow::loadSettings()
         ui->taskWidget->setColumnWidth(i, width);
     }
 
+}
+
+void YaplukaWindow::menuCategorie(const QPoint &pos)
+{
+    auto *item = ui->categorie_widget->itemAt(pos);
+    if (!item)
+        return;
+
+    // Les actions doivent porter sur la ligne cliquée.
+    ui->categorie_widget->setCurrentItem(item);
+
+    QMenu menu(this);
+
+    QAction *editer = menu.addAction(tr("Éditer…"));
+    QAction *supprimer = menu.addAction(tr("Supprimer la catégorie"));
+
+    QAction *choix = menu.exec(
+        ui->categorie_widget->viewport()->mapToGlobal(pos)
+    );
+
+    if (choix == editer)
+        editerCategorie();
+    else if (choix == supprimer)
+        supprimerCategorie();
 }
 
 void YaplukaWindow::onActionDeleteTask() {

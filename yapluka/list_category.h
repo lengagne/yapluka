@@ -25,6 +25,12 @@ public:
 
     void update_display(QTreeWidget* cat_widget);
 
+    QList<category*> toutes_categories() const;
+
+    category* parent_de(category *cat) const;
+
+    bool changer_parent(category *cat, category *nouveauParent);
+
 private:
     category* master_;
 };

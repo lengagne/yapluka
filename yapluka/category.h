@@ -5,6 +5,7 @@
 #include <QString>
 #include <QXmlStreamReader>
 #include <QFile>
+#include <QFont>
 #include <QDebug>
 #include <QDomDocument>
 #include <QTreeWidget>
@@ -36,6 +37,8 @@ public:
     int level_=0;
     QStringList bgColor_ = QStringList() << "255" << "255" << "255";
     QStringList fgColor_ = QStringList() << "0" << "0" << "0";
+
+    QFont font_;
 
     QList<category*> children_;
 

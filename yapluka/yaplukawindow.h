@@ -70,6 +70,10 @@ private slots:
 
     void supprimerCategorie();
 
+    void menuCategorie(const QPoint &pos);
+
+    void editerCategorie();
+
 
 private:
     void contextMenuEvent(QContextMenuEvent *event) override ;

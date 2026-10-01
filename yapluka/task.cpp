@@ -187,6 +187,7 @@ void task::update_display(QTreeWidgetItem* task_widget, bool cache)
     {
         if (level_ )
         {
+
             // Stocker la priorité dans l'élément
             task_widget->setData(0, Qt::UserRole + 1, percentage_ != 0);
 
@@ -224,6 +225,7 @@ void task::update_display(QTreeWidgetItem* task_widget, bool cache)
             {
                 for (int i=0;i<11;i++)
                 {
+                    task_widget->setFont(i, cat_->font_);
                     task_widget->setBackground(i,QBrush(QColor(cat_->bgColor_[0].toInt(), cat_->bgColor_[1].toInt(), cat_->bgColor_[2].toInt())));
                     task_widget->setForeground(i,QBrush(QColor(cat_->fgColor_[0].toInt(), cat_->fgColor_[1].toInt(), cat_->fgColor_[2].toInt())));
                 }

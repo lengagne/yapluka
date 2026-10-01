@@ -53,6 +53,9 @@ category::category(QDomElement root, int level)
             children_.append(item);
         }
     }
+
+    if (root.hasAttribute("font"))
+        font_.fromString(root.attribute("font"));
 }
 
 void category::add_task_by_id(QString id)
@@ -117,6 +120,8 @@ void category::save(  QDomDocument& document,
         elcat.setAttribute("bgColor", "(" +bgColor_.join(", ") + ")");
         elcat.setAttribute("fgColor", "(" +fgColor_.join(", ") + ")");
 
+        elcat.setAttribute("font", font_.toString());
+
         QString idsString;
         // Concaténer chaque élément de la liste en une seule chaîne
         for (int i = 0; i < ids_.size(); ++i) {
@@ -157,6 +162,8 @@ void category::update_display(QTreeWidgetItem* cat_widget)
         cat_widget->setForeground(0,QBrush(QColor(fgColor_[0].toInt(), fgColor_[1].toInt(), fgColor_[2].toInt())));
 
         cat_widget->setData(0, Qt::UserRole, QVariant::fromValue(this));
+
+        cat_widget->setFont(0, font_);
     }
     //cat_widget->setBackground(0,QBrush(QColor(10,20,30))); // Jaune
     for (category* c : children_)

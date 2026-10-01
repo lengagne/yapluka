@@ -103,6 +103,85 @@ void list_category::save( QDomDocument& document,
     master_->save(document,elroot);
 }
 
+QList<category*> list_category::toutes_categories() const
+{
+    QList<category*> resultat;
+
+    std::function<void(category*)> parcourir = [&](category *parent) {
+        for (category *enfant : parent->children_) {
+            resultat.append(enfant);
+            parcourir(enfant);
+        }
+    };
+
+    parcourir(master_);
+    return resultat;
+}
+
+category* list_category::parent_de(category *cat) const
+{
+    std::function<category*(category*)> chercher =
+        [&](category *parent) -> category* {
+            for (category *enfant : parent->children_) {
+                if (enfant == cat)
+                    return parent;
+
+                if (category *resultat = chercher(enfant))
+                    return resultat;
+            }
+
+            return nullptr;
+        };
+
+    category *parent = chercher(master_);
+    return parent == master_ ? nullptr : parent;
+}
+
+bool list_category::changer_parent(category *cat,
+                                  category *nouveauParent)
+{
+    const auto categories = toutes_categories();
+
+    if (!cat || !categories.contains(cat))
+        return false;
+
+    if (nouveauParent && !categories.contains(nouveauParent))
+        return false;
+
+    // Interdire de déplacer une catégorie sous elle-même
+    // ou sous l'un de ses descendants.
+    for (category *p = nouveauParent; p; p = parent_de(p)) {
+        if (p == cat)
+            return false;
+    }
+
+    category *ancienParent = parent_de(cat);
+    if (!ancienParent)
+        ancienParent = master_;
+
+    category *destination = nouveauParent ? nouveauParent : master_;
+
+    if (ancienParent == destination)
+        return true;
+
+    if (!ancienParent->children_.removeOne(cat))
+        return false;
+
+    destination->children_.append(cat);
+
+    // L'affichage et la sauvegarde utilisent level_.
+    std::function<void(category*, int)> actualiserNiveau =
+        [&](category *element, int niveau) {
+            element->level_ = niveau;
+
+            for (category *enfant : element->children_)
+                actualiserNiveau(enfant, niveau + 1);
+        };
+
+    actualiserNiveau(cat, destination->level_ + 1);
+    return true;
+}
+
 void list_category::update_display(QTreeWidget* cat_widget)
 {
     cat_widget->setHeaderLabels(QStringList() << "Nom" );
