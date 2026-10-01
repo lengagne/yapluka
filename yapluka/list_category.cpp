@@ -184,7 +184,7 @@ bool list_category::changer_parent(category *cat,
 
 void list_category::update_display(QTreeWidget* cat_widget)
 {
-    cat_widget->setHeaderLabels(QStringList() << "Nom" );
+    cat_widget->setHeaderLabels(QStringList() << "Catégories" );
     master_->update_display(cat_widget->invisibleRootItem());
     cat_widget->expandAll();
 }

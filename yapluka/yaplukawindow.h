@@ -13,6 +13,7 @@
 #include "list_task.h"
 
 class QLabel;
+class QLineEdit;
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class YaplukaWindow; }
@@ -103,6 +104,8 @@ private:
     QString category_filter_;
 
     QLabel *compteursLabel_ = nullptr;
+
+    QLineEdit *rechercheEdit_ = nullptr;
 
 };
 #endif // YAPLUKAWINDOW_H

@@ -70,25 +70,35 @@ YaplukaWindow::YaplukaWindow(QWidget *parent)
     });
 
 
-    auto *ajouterCat = new QPushButton(tr("+ Catégorie"), this);
-    auto *supprimerCat = new QPushButton(tr("− Catégorie"), this);
-
-    horizontalLayoutButton->addWidget(ajouterCat);
-    horizontalLayoutButton->addWidget(supprimerCat);
-
-    connect(ajouterCat, &QPushButton::clicked,
-            this, &YaplukaWindow::ajouterCategorie);
-
-    connect(supprimerCat, &QPushButton::clicked,
-            this, &YaplukaWindow::supprimerCategorie);
-
     verticalLayout->addLayout(horizontalLayoutButton);
 
-    QHBoxLayout * horizontalLayout = new QHBoxLayout;
-    horizontalLayout->addWidget(ui->taskWidget);
-    horizontalLayout->addWidget(ui->categorie_widget);
+    rechercheEdit_ = new QLineEdit(this);
+    rechercheEdit_->setPlaceholderText(
+        tr("Rechercher dans le titre ou la description…")
+    );
+    rechercheEdit_->setClearButtonEnabled(true);
 
-    verticalLayout->addLayout(horizontalLayout);
+
+    connect(
+        rechercheEdit_,
+        &QLineEdit::textChanged,
+        this,
+        [this](const QString &) {
+            apply_filter_category();
+        }
+    );
+
+    // Colonne droite : recherche en haut, catégories en dessous.
+    auto *colonneDroite = new QVBoxLayout;
+    colonneDroite->addWidget(rechercheEdit_);
+    colonneDroite->addWidget(ui->categorie_widget, 1);
+
+    // Zone principale : tâches à gauche, colonne droite à droite.
+    auto *horizontalLayout = new QHBoxLayout;
+    horizontalLayout->addWidget(ui->taskWidget, 3);
+    horizontalLayout->addLayout(colonneDroite, 1);
+
+    verticalLayout->addLayout(horizontalLayout, 1);
 
     // Assurez-vous que le centralwidget utilise ce layout
     ui->centralwidget->setLayout(verticalLayout);
@@ -176,22 +186,60 @@ void YaplukaWindow::ajouterCategorie()
 
 
 bool YaplukaWindow::filter_task(QTreeWidgetItem *item)
+// {
+//     bool correspond = category_filter_.isEmpty()
+//                       || item->text(3) == category_filter_;
+//
+//     bool enfantVisible = false;
+//
+//     for (int i = 0; i < item->childCount(); ++i) {
+//         // Toujours parcourir chaque enfant.
+//         if (filter_task(item->child(i))) {
+//             enfantVisible = true;
+//         }
+//     }
+//
+//     bool visible = correspond || enfantVisible;
+//     item->setHidden(!visible);
+//
+//     return visible;
+// }
 {
-    bool correspond = category_filter_.isEmpty()
-                      || item->text(3) == category_filter_;
+    QString recherche = rechercheEdit_
+        ? rechercheEdit_->text().trimmed()
+        : QString();
+
+    // La colonne 1 contient l'identifiant de la tâche.
+    task *t = tasks_.get_task(item->text(1));
+
+    bool correspondRecherche = recherche.isEmpty();
+
+    if (t && !correspondRecherche) {
+        correspondRecherche =
+            t->subject_.contains(recherche, Qt::CaseInsensitive)
+            || t->description_.contains(
+                recherche, Qt::CaseInsensitive
+            );
+    }
+
+    bool correspondCategorie =
+        category_filter_.isEmpty()
+        || item->text(3) == category_filter_;
+
+    bool correspond =
+        correspondRecherche && correspondCategorie;
 
     bool enfantVisible = false;
 
     for (int i = 0; i < item->childCount(); ++i) {
-        // Toujours parcourir chaque enfant.
-        if (filter_task(item->child(i))) {
+        if (filter_task(item->child(i)))
             enfantVisible = true;
-        }
     }
 
+    // Garder les parents visibles pour accéder aux résultats enfants.
     bool visible = correspond || enfantVisible;
-    item->setHidden(!visible);
 
+    item->setHidden(!visible);
     return visible;
 }
 
@@ -500,26 +548,40 @@ void YaplukaWindow::loadSettings()
     }
 
 }
-
 void YaplukaWindow::menuCategorie(const QPoint &pos)
 {
     auto *item = ui->categorie_widget->itemAt(pos);
-    if (!item)
-        return;
 
-    // Les actions doivent porter sur la ligne cliquée.
-    ui->categorie_widget->setCurrentItem(item);
+    if (item)
+        ui->categorie_widget->setCurrentItem(item);
 
     QMenu menu(this);
 
-    QAction *editer = menu.addAction(tr("Éditer…"));
-    QAction *supprimer = menu.addAction(tr("Supprimer la catégorie"));
+    QAction *ajouter =
+        menu.addAction(tr("Ajouter une catégorie…"));
+
+    QAction *editer = nullptr;
+    QAction *supprimer = nullptr;
+
+    // Éditer et supprimer uniquement la catégorie cliquée.
+    if (item) {
+        menu.addSeparator();
+
+        editer = menu.addAction(tr("Éditer cette catégorie…"));
+        supprimer = menu.addAction(tr("Supprimer cette catégorie"));
+    }
 
     QAction *choix = menu.exec(
         ui->categorie_widget->viewport()->mapToGlobal(pos)
     );
 
-    if (choix == editer)
+    // Menu fermé sans sélectionner d'action.
+    if (!choix)
+        return;
+
+    if (choix == ajouter)
+        ajouterCategorie();
+    else if (choix == editer)
         editerCategorie();
     else if (choix == supprimer)
         supprimerCategorie();
