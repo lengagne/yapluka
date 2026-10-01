@@ -12,6 +12,8 @@
 #include "list_category.h"
 #include "list_task.h"
 
+class QLabel;
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class YaplukaWindow; }
 QT_END_NAMESPACE
@@ -100,7 +102,7 @@ private:
 
     QString category_filter_;
 
-
+    QLabel *compteursLabel_ = nullptr;
 
 };
 #endif // YAPLUKAWINDOW_H

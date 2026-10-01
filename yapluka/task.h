@@ -14,6 +14,9 @@
 #include <QCryptographicHash>
 #include <QDebug>
 
+#include <QDate>
+#include <QHeaderView>
+
 
 #include "list_category.h"
 
@@ -71,6 +74,38 @@ public:
     }
 };
 
+class TaskTreeItem : public QTreeWidgetItem
+{
+public:
+    enum { UrgenceRole = Qt::UserRole + 10 };
+
+    explicit TaskTreeItem(QTreeWidgetItem *parent)
+        : QTreeWidgetItem(parent)
+    {
+    }
+
+    bool operator<(const QTreeWidgetItem &other) const override
+    {
+        int urgenceA = data(0, UrgenceRole).toInt();
+        int urgenceB = other.data(0, UrgenceRole).toInt();
+
+        if (urgenceA != urgenceB) {
+            bool descendant =
+                treeWidget()
+                && treeWidget()->header()->sortIndicatorOrder()
+                       == Qt::DescendingOrder;
+
+            // Qt inverse ensuite le résultat pour le tri décroissant.
+            // Cette compensation garde les urgences en tête.
+            return descendant
+                ? urgenceA > urgenceB
+                : urgenceA < urgenceB;
+        }
+
+        // À urgence identique, respecter la colonne choisie.
+        return QTreeWidgetItem::operator<(other);
+    }
+};
 
 class task {
 
@@ -100,15 +135,18 @@ public:
 
 private:
     QString subject_;
-    unsigned int priority_;
+    unsigned int priority_ = 0;
     QString id_;
-    int status_;
+    int status_ = 0;
     unsigned int percentage_;
     QList<task*> sub_tasks_;
     int level_=0;
     category* cat_ = nullptr;
     QString description_;
     QDateTime actualstartdate_, creationdate_,completiondate_,modificationdate_;
+
+    // Date invalide = aucune deadline.
+    QDate deadline_;
 
     friend class task_dialog;
     friend class YaplukaWindow;

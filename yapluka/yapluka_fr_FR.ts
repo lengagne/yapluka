@@ -4,185 +4,195 @@
 <context>
     <name>YaplukaWindow</name>
     <message>
-        <location filename="yaplukawindow.cpp" line="52"/>
+        <location filename="yaplukawindow.cpp" line="56"/>
         <source>Toutes les catégories</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="69"/>
+        <location filename="yaplukawindow.cpp" line="73"/>
         <source>+ Catégorie</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="70"/>
+        <location filename="yaplukawindow.cpp" line="74"/>
         <source>− Catégorie</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="122"/>
+        <location filename="yaplukawindow.cpp" line="103"/>
+        <source>Totaux de toutes les catégories, sous-tâches comprises. Les échéances sous 7 jours (retard inlus).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="yaplukawindow.cpp" line="154"/>
         <source>Ajouter une catégorie</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="123"/>
-        <location filename="yaplukawindow.cpp" line="217"/>
+        <location filename="yaplukawindow.cpp" line="155"/>
+        <location filename="yaplukawindow.cpp" line="249"/>
         <source>Nom :</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="135"/>
-        <location filename="yaplukawindow.cpp" line="707"/>
-        <location filename="yaplukawindow.cpp" line="720"/>
+        <location filename="yaplukawindow.cpp" line="167"/>
+        <location filename="yaplukawindow.cpp" line="758"/>
+        <location filename="yaplukawindow.cpp" line="771"/>
         <source>Catégorie</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="136"/>
-        <location filename="yaplukawindow.cpp" line="365"/>
+        <location filename="yaplukawindow.cpp" line="168"/>
+        <location filename="yaplukawindow.cpp" line="397"/>
         <source>Une catégorie porte déjà ce nom.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="210"/>
+        <location filename="yaplukawindow.cpp" line="242"/>
         <source>Éditer la catégorie</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="221"/>
+        <location filename="yaplukawindow.cpp" line="253"/>
         <source>(Aucune — à la racine)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="256"/>
+        <location filename="yaplukawindow.cpp" line="288"/>
         <source>Catégorie parent :</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="260"/>
+        <location filename="yaplukawindow.cpp" line="292"/>
         <source>Choisir la police…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="262"/>
+        <location filename="yaplukawindow.cpp" line="294"/>
         <source>Police :</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="268"/>
+        <location filename="yaplukawindow.cpp" line="300"/>
         <source>Police de la catégorie</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="295"/>
-        <location filename="yaplukawindow.cpp" line="296"/>
+        <location filename="yaplukawindow.cpp" line="327"/>
+        <location filename="yaplukawindow.cpp" line="328"/>
         <source>Choisir…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="298"/>
+        <location filename="yaplukawindow.cpp" line="330"/>
         <source>Couleur du fond :</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="299"/>
+        <location filename="yaplukawindow.cpp" line="331"/>
         <source>Couleur du texte :</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="315"/>
+        <location filename="yaplukawindow.cpp" line="347"/>
         <source>Couleur du fond</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="326"/>
+        <location filename="yaplukawindow.cpp" line="358"/>
         <source>Couleur du texte</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="352"/>
-        <location filename="yaplukawindow.cpp" line="364"/>
+        <location filename="yaplukawindow.cpp" line="384"/>
+        <location filename="yaplukawindow.cpp" line="396"/>
         <source>Nom invalide</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="353"/>
+        <location filename="yaplukawindow.cpp" line="385"/>
         <source>Le nom ne peut pas être vide.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="377"/>
+        <location filename="yaplukawindow.cpp" line="409"/>
         <source>Parent invalide</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="378"/>
+        <location filename="yaplukawindow.cpp" line="410"/>
         <source>Impossible de déplacer cette catégorie.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="479"/>
+        <location filename="yaplukawindow.cpp" line="515"/>
         <source>Éditer…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="480"/>
+        <location filename="yaplukawindow.cpp" line="516"/>
         <source>Supprimer la catégorie</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="497"/>
+        <location filename="yaplukawindow.cpp" line="533"/>
         <source>Supprimer l&apos;élément</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="498"/>
+        <location filename="yaplukawindow.cpp" line="534"/>
         <source>Êtes-vous sûr de vouloir supprimer cet élément ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="514"/>
+        <location filename="yaplukawindow.cpp" line="550"/>
         <source>Suppression</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="514"/>
+        <location filename="yaplukawindow.cpp" line="550"/>
         <source>Aucun élément sélectionné.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="572"/>
+        <location filename="yaplukawindow.cpp" line="623"/>
         <source>Finir la tâche</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="573"/>
+        <location filename="yaplukawindow.cpp" line="624"/>
         <source>Êtes-vous sûr de vouloir finir cette tâche ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="680"/>
+        <location filename="yaplukawindow.cpp" line="731"/>
         <source>Context menu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="708"/>
+        <location filename="yaplukawindow.cpp" line="759"/>
         <source>Sélectionnez une catégorie à supprimer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="721"/>
+        <location filename="yaplukawindow.cpp" line="772"/>
         <source>Supprimez d&apos;abord les sous-catégories.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="728"/>
+        <location filename="yaplukawindow.cpp" line="779"/>
         <source>Supprimer une catégorie</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="729"/>
+        <location filename="yaplukawindow.cpp" line="780"/>
         <source>Supprimer « %1 » ?
 Les tâches seront conservées sans cette catégorie.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="yaplukawindow.cpp" line="823"/>
+        <source>Achevées : %1    |    En cours : %2    |    À faire sous 7 jours : %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -254,8 +264,43 @@ Les tâches seront conservées sans cette catégorie.</source>
 <context>
     <name>task_dialog</name>
     <message>
-        <location filename="task_dialog.cpp" line="33"/>
+        <location filename="task_dialog.cpp" line="49"/>
         <source>(Sans catégorie)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="task_dialog.cpp" line="95"/>
+        <source>Choisir…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="task_dialog.cpp" line="96"/>
+        <source>Avec une date limite</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="task_dialog.cpp" line="97"/>
+        <source>Pas de deadline (-1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="task_dialog.cpp" line="104"/>
+        <source>Deadline :</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="task_dialog.cpp" line="105"/>
+        <source>Date limite :</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="task_dialog.cpp" line="180"/>
+        <source>Deadline</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="task_dialog.cpp" line="181"/>
+        <source>Choisissez une date limite ou « Pas de deadline ».</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

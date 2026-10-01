@@ -7,15 +7,31 @@
 #include <QTextEdit>
 #include <QDateTimeEdit>
 #include <QPushButton>
+#include <QDateEdit>
+#include <QMessageBox>
+
 
 task_dialog::task_dialog(QWidget *parent)
     : QDialog(parent), currentTask(new task()) {
     initUI();
 }
 
+// task_dialog::task_dialog(list_category* lcat,
+//                          task* t, QWidget *parent)
+//     : QDialog(parent), currentTask(t), lcat_(lcat) {
+//     initUI();
+//     loadTaskData();
+// }
+
 task_dialog::task_dialog(list_category* lcat,
-                         task* t, QWidget *parent)
-    : QDialog(parent), currentTask(t), lcat_(lcat) {
+                         task* t,
+                         QWidget* parent,
+                         bool creation)
+    : QDialog(parent),
+      currentTask(t),
+      lcat_(lcat),
+      creation_(creation)
+{
     initUI();
     loadTaskData();
 }
@@ -75,6 +91,28 @@ void task_dialog::initUI() {
     formLayout->addRow("Completion Date:", completionDateEdit);
     formLayout->addRow("Modification Date:", modificationDateEdit);
 
+    deadlineMode = new QComboBox(this);
+    deadlineMode->addItem(tr("Choisir…"));                  // 0
+    deadlineMode->addItem(tr("Avec une date limite"));      // 1
+    deadlineMode->addItem(tr("Pas de deadline (-1)"));       // 2
+
+    deadlineEdit = new QDateEdit(QDate::currentDate(), this);
+    deadlineEdit->setCalendarPopup(true);
+    deadlineEdit->setDisplayFormat("dd/MM/yyyy");
+    deadlineEdit->setEnabled(false);
+
+    formLayout->addRow(tr("Deadline :"), deadlineMode);
+    formLayout->addRow(tr("Date limite :"), deadlineEdit);
+
+    connect(
+        deadlineMode,
+        QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this,
+        [this](int index) {
+            deadlineEdit->setEnabled(index == 1);
+        }
+    );
+
     QPushButton *okButton = new QPushButton("OK", this);
     QPushButton *cancelButton = new QPushButton("Cancel", this);
 
@@ -122,10 +160,29 @@ void task_dialog::loadTaskData() {
                 break;
             }
         }
+
+        if (currentTask->deadline_.isValid())
+            deadlineEdit->setDate(currentTask->deadline_);
+
+        deadlineMode->setCurrentIndex(
+            creation_
+                ? 0
+                : (currentTask->deadline_.isValid() ? 1 : 2)
+        );
+
     }
 }
 
 void task_dialog::accept() {
+    if (deadlineMode->currentIndex() == 0) {
+        QMessageBox::warning(
+            this,
+            tr("Deadline"),
+            tr("Choisissez une date limite ou « Pas de deadline ».")
+        );
+        return;
+    }
+
     if (currentTask) {
         currentTask->subject_ = subjectEdit->text();
         currentTask->priority_ = prioritySpinBox->value();
@@ -164,6 +221,8 @@ void task_dialog::accept() {
 
             currentTask->cat_ = new_cat;
         }
+
+        currentTask->deadline_ = deadlineMode->currentIndex() == 1 ? deadlineEdit->date() : QDate();
 
     }
     QDialog::accept();

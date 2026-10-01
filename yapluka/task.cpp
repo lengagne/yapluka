@@ -1,4 +1,5 @@
 #include "task.h"
+#include <QApplication>
 
 QString generateUniqueId() {
     // Obtenez la date et l'heure actuelles
@@ -111,6 +112,12 @@ task::task(QDomElement root, int level)
         }
 
     }
+
+    QString valeur = root.attribute("deadline", "-1");
+
+    deadline_ = valeur == "-1"
+        ? QDate()
+        : QDate::fromString(valeur, Qt::ISODate);
 }
 
 void task::delete_task(task* t)
@@ -154,6 +161,13 @@ void task::save(  QDomDocument& document,
         QDomText text1 = document.createTextNode(description_);
         eldescription.appendChild(text1);
         elroot.appendChild(eldescription);
+
+        elroot.setAttribute(
+            "deadline",
+            deadline_.isValid()
+                ? deadline_.toString(Qt::ISODate)
+                : QStringLiteral("-1")
+        );
     }
     for (task* c : sub_tasks_)
     {
@@ -180,7 +194,7 @@ void task::update(const QList<QLineEdit*>& editFields)
     qDebug()<<"il faut mettre à jour l'item id : "<< id_ ;
 
 }
-
+/*
 void task::update_display(QTreeWidgetItem* task_widget, bool cache)
 {
     if ( percentage_<99 || !cache)
@@ -241,4 +255,138 @@ void task::update_display(QTreeWidgetItem* task_widget, bool cache)
             }
         }
     }
+}*/
+
+void task::update_display(QTreeWidgetItem *parentItem, bool cache)
+{
+    QTreeWidget *tree = parentItem->treeWidget();
+    if (!tree)
+        return;
+
+    QTreeWidgetItem *parentEnfants = parentItem;
+
+    bool terminee = percentage_ >= 100;
+
+    // level_ == 0 correspond à la racine technique.
+    if (level_ != 0 && (!cache || !terminee)) {
+        int urgence = 2; // 0 : retard, 1 : semaine, 2 : autres
+
+        if (!terminee && deadline_.isValid()) {
+            qint64 jours = QDate::currentDate().daysTo(deadline_);
+
+            if (jours < 0)
+                urgence = 0;
+            else if (jours <= 7)
+                urgence = 1;
+        }
+
+        // Les tâches urgentes sont visibles au premier niveau.
+        QTreeWidgetItem *destination =
+            urgence < 2
+                ? tree->invisibleRootItem()
+                : parentItem;
+
+        auto *item = new TaskTreeItem(destination);
+
+        item->setData(0, TaskTreeItem::UrgenceRole, urgence);
+        item->setData(0, Qt::UserRole + 1, percentage_ != 0);
+
+        item->setText(1, id_);
+        item->setText(2, subject_);
+        item->setText(3, cat_ ? cat_->name_ : QString());
+
+        item->setText(
+            4, QString::number(priority_).rightJustified(2, '0')
+        );
+
+        item->setText(5, creationdate_.toString("yyyy-MM-dd"));
+        item->setText(6, actualstartdate_.toString("yyyy-MM-dd"));
+        item->setText(7, completiondate_.toString("yyyy-MM-dd"));
+        item->setText(8, modificationdate_.toString("yyyy-MM-dd"));
+
+        item->setData(9, Qt::UserRole + 2, percentage_);
+        item->setText(
+            9, QString::number(percentage_).rightJustified(3, '0')
+        );
+
+        item->setText(
+            10,
+            deadline_.isValid()
+                ? deadline_.toString(Qt::ISODate)
+                : QStringLiteral("—")
+        );
+
+        item->setTextAlignment(4, Qt::AlignCenter);
+        item->setTextAlignment(9, Qt::AlignCenter);
+        item->setTextAlignment(10, Qt::AlignCenter);
+
+        // Couleurs habituelles de la catégorie.
+        if (cat_) {
+            QColor fond(
+                cat_->bgColor_[0].toInt(),
+                cat_->bgColor_[1].toInt(),
+                cat_->bgColor_[2].toInt()
+            );
+
+            QColor texte(
+                cat_->fgColor_[0].toInt(),
+                cat_->fgColor_[1].toInt(),
+                cat_->fgColor_[2].toInt()
+            );
+
+            for (int i = 0; i < tree->columnCount(); ++i) {
+                item->setBackground(i, QBrush(fond));
+                item->setForeground(i, QBrush(texte));
+
+                // Si vous avez ajouté font_ à category :
+                item->setFont(i, cat_->font_);
+            }
+        }
+
+        // L'urgence prend le dessus sur le style de catégorie
+        // pour le titre et la deadline.
+        if (urgence < 2) {
+            QColor fond = urgence == 0
+                ? QColor("#FEE2E2")
+                : QColor("#FFEDD5");
+
+            QColor texte = urgence == 0
+                ? QColor("#991B1B")
+                : QColor("#9A3412");
+
+            QFont police = QApplication::font();
+            police.setPointSize(urgence == 0 ? 22 : 16);
+            police.setBold(true);
+
+            for (int colonne : {2, 10}) {
+                item->setFont(colonne, police);
+                item->setBackground(colonne, QBrush(fond));
+                item->setForeground(colonne, QBrush(texte));
+            }
+
+            QString indication;
+
+            if (urgence == 0) {
+                qint64 retard =
+                    deadline_.daysTo(QDate::currentDate());
+
+                indication =
+                    QStringLiteral("En retard de %1 jour(s)")
+                        .arg(retard);
+            } else {
+                indication =
+                    QStringLiteral("À faire dans les 7 prochains jours");
+            }
+
+            item->setToolTip(2, indication);
+            item->setToolTip(10, indication);
+        }
+
+        parentEnfants = item;
+    }
+
+    // Parcourir aussi les enfants d'une tâche terminée masquée :
+    // une sous-tâche inachevée doit rester accessible.
+    for (task *enfant : sub_tasks_)
+        enfant->update_display(parentEnfants, cache);
 }

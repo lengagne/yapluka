@@ -16,6 +16,9 @@
 #include <QVBoxLayout>
 #include <QColorDialog>
 #include <QColor>
+#include <QTimer>
+#include <QLabel>
+#include <QStatusBar>
 
 #include "task_dialog.h"
 
@@ -27,6 +30,7 @@ YaplukaWindow::YaplukaWindow(QWidget *parent)
     , ui(new Ui::YaplukaWindow)
 {
     ui->setupUi(this);
+    ui->taskWidget->setColumnCount(11);
 
     ui->categorie_widget->setContextMenuPolicy(Qt::CustomContextMenu);
 
@@ -92,6 +96,16 @@ YaplukaWindow::YaplukaWindow(QWidget *parent)
     // Définissez le centralwidget comme widget central de la fenêtre principale
     this->setCentralWidget(ui->centralwidget);
 
+    compteursLabel_ = new QLabel(this);
+
+    compteursLabel_->setMargin(4);
+    compteursLabel_->setToolTip(
+        tr("Totaux de toutes les catégories, sous-tâches comprises. "
+        "Les échéances sous 7 jours (retard inlus).")
+    );
+
+    statusBar()->addPermanentWidget(compteursLabel_, 1);
+
     // Charger les paramètres au démarrage
     loadSettings();
     read_file();
@@ -104,6 +118,24 @@ YaplukaWindow::YaplukaWindow(QWidget *parent)
 
 
     update_list();
+
+    auto *timerDeadline = new QTimer(this);
+
+    connect(
+        timerDeadline,
+        &QTimer::timeout,
+        this,
+        [this, dernierJour = QDate::currentDate()]() mutable {
+            QDate aujourdHui = QDate::currentDate();
+
+            if (aujourdHui != dernierJour) {
+                dernierJour = aujourdHui;
+                update_list();
+            }
+        }
+    );
+
+    timerDeadline->start(60000);
 }
 
 
@@ -433,7 +465,9 @@ void YaplukaWindow::loadSettings()
     // Charger les noms des colonnes sauvegardés
     settings.beginGroup("ColumnNames");
     QStringList headers;
-    for (int i = 0; i < 9; ++i) {
+    // for (int i = 0; i < 9; ++i)
+    for (int i = 0; i < ui->taskWidget->columnCount(); ++i)
+    {
         headers.append(settings.value(QString::number(i), QString("Colonne %1").arg(i)).toString());
     }
     settings.endGroup();
@@ -442,7 +476,9 @@ void YaplukaWindow::loadSettings()
 
     // Restaurer la visibilité des colonnes
     settings.beginGroup("ColumnVisibility");
-    for (int i = 0; i < 9; ++i) {
+    // for (int i = 0; i < 9; ++i)
+    for (int i = 0; i < ui->taskWidget->columnCount(); ++i)
+    {
         bool visible = settings.value(QString::number(i), true).toBool();
         ui->taskWidget->setColumnHidden(i, !visible);
     }
@@ -554,14 +590,29 @@ void YaplukaWindow::on_actionQuitter_triggered()
     QApplication::quit();
 }
 
+// void YaplukaWindow::on_actionnouvelle_tache_triggered()
+// {
+//     task* new_task = new task();
+//     // Utilisez le constructeur approprié pour éditer une tâche existante
+//     task_dialog* dialog = new task_dialog(&categories_,new_task, this);
+//     connect(dialog, &task_dialog::accepted, this, &YaplukaWindow::updateTask);
+//     dialog->exec();
+//     tasks_.add_task(new_task);
+//     update_list();
+//     save();
+// }
 void YaplukaWindow::on_actionnouvelle_tache_triggered()
 {
-    task* new_task = new task();
-    // Utilisez le constructeur approprié pour éditer une tâche existante
-    task_dialog* dialog = new task_dialog(&categories_,new_task, this);
-    connect(dialog, &task_dialog::accepted, this, &YaplukaWindow::updateTask);
-    dialog->exec();
-    tasks_.add_task(new_task);
+    task *nouvelle = new task();
+
+    task_dialog dialog(&categories_, nouvelle, this, true);
+
+    if (dialog.exec() != QDialog::Accepted) {
+        delete nouvelle;
+        return;
+    }
+
+    tasks_.add_task(nouvelle);
     update_list();
     save();
 }
@@ -765,6 +816,16 @@ void YaplukaWindow::update_list()
     ui->cachefinibox->setChecked(cache_fini_);
 
     apply_filter_category();
+
+    const auto compteurs = tasks_.compter();
+
+    compteursLabel_->setText(
+        tr("Achevées : %1    |    En cours : %2    |    "
+        "À faire sous 7 jours : %3")
+            .arg(compteurs.achevees)
+            .arg(compteurs.enCours)
+            .arg(compteurs.sousSeptJours)
+    );
 }
 
 

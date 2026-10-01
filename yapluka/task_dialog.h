@@ -43,13 +43,18 @@ class QSpinBox;
 class QComboBox;
 class QTextEdit;
 class QDateTimeEdit;
+class QDateEdit;
 
 class task_dialog : public QDialog {
     Q_OBJECT
 
 public:
     task_dialog(QWidget *parent = nullptr);
-    task_dialog(list_category* lcat, task* t, QWidget *parent = nullptr);
+    task_dialog(list_category* lcat,
+                task* t,
+                QWidget* parent = nullptr,
+                bool creation = false);
+
 
 
 private slots:
@@ -74,6 +79,10 @@ private:
     list_category* lcat_;
 
     QList<QString> cats_;
+
+    QComboBox *deadlineMode;
+    QDateEdit *deadlineEdit;
+    bool creation_ = false;
 };
 
 #endif // TASK_DIALOG_H

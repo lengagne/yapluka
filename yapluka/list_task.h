@@ -7,6 +7,15 @@
 
 class list_task{
 public:
+
+    struct Compteurs {
+        int achevees = 0;
+        int enCours = 0;
+        int sousSeptJours = 0;
+    };
+
+    Compteurs compter() const;
+
     list_task(){
     };
 
