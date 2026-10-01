@@ -43,6 +43,10 @@ private slots:
 
     void editTask(QTreeWidgetItem* item, int column);
 
+    void apply_filter_category();
+
+    bool filter_task(QTreeWidgetItem *item);
+
     void updateTask( );
 
     void on_actionnouvelle_tache_triggered();
@@ -61,6 +65,11 @@ private slots:
     void on_BoutonFinirTache_clicked();
 
     void on_BoutonSupprimerTache_clicked();
+
+    void ajouterCategorie();
+
+    void supprimerCategorie();
+
 
 private:
     void contextMenuEvent(QContextMenuEvent *event) override ;
@@ -84,6 +93,10 @@ private:
     QSize window_size_;
 
     bool cache_fini_ = true;
+
+    QString category_filter_;
+
+
 
 };
 #endif // YAPLUKAWINDOW_H

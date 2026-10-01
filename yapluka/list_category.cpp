@@ -1,8 +1,49 @@
 #include "list_category.h"
+#include <functional>
 
 list_category::list_category()
 {
     master_ = new category();
+}
+
+bool list_category::ajouter(QString nom)
+{
+    nom = nom.trimmed();
+
+    // Refuser les noms vides ou déjà utilisés.
+    if (nom.isEmpty() || master_->get_cat_by_name(nom))
+        return false;
+
+    auto *cat = new category();
+    cat->name_ = nom;
+    cat->level_ = 1;
+
+    master_->children_.append(cat);
+    return true;
+}
+
+bool list_category::supprimer(category *cat)
+{
+    if (!cat || cat == master_ || !cat->children_.isEmpty())
+        return false;
+
+    // Retrouver le parent, y compris pour une sous-catégorie.
+    std::function<bool(category*)> retirer =
+        [&](category *parent) -> bool {
+            if (parent->children_.removeOne(cat)) {
+                delete cat;
+                return true;
+            }
+
+            for (category *enfant : parent->children_) {
+                if (retirer(enfant))
+                    return true;
+            }
+
+            return false;
+        };
+
+    return retirer(master_);
 }
 
 category* list_category::get_cat_for_id( QString id)

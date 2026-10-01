@@ -4,38 +4,96 @@
 <context>
     <name>YaplukaWindow</name>
     <message>
-        <location filename="yaplukawindow.cpp" line="152"/>
+        <location filename="yaplukawindow.cpp" line="34"/>
+        <source>Toutes les catégories</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="yaplukawindow.cpp" line="51"/>
+        <source>+ Catégorie</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="yaplukawindow.cpp" line="52"/>
+        <source>− Catégorie</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="yaplukawindow.cpp" line="104"/>
+        <source>Ajouter une catégorie</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="yaplukawindow.cpp" line="105"/>
+        <source>Nom :</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="yaplukawindow.cpp" line="117"/>
+        <location filename="yaplukawindow.cpp" line="455"/>
+        <location filename="yaplukawindow.cpp" line="468"/>
+        <source>Catégorie</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="yaplukawindow.cpp" line="118"/>
+        <source>Une catégorie porte déjà ce nom.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="yaplukawindow.cpp" line="245"/>
         <source>Supprimer l&apos;élément</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="153"/>
+        <location filename="yaplukawindow.cpp" line="246"/>
         <source>Êtes-vous sûr de vouloir supprimer cet élément ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="169"/>
+        <location filename="yaplukawindow.cpp" line="262"/>
         <source>Suppression</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="169"/>
+        <location filename="yaplukawindow.cpp" line="262"/>
         <source>Aucun élément sélectionné.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="225"/>
+        <location filename="yaplukawindow.cpp" line="320"/>
         <source>Finir la tâche</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="226"/>
+        <location filename="yaplukawindow.cpp" line="321"/>
         <source>Êtes-vous sûr de vouloir finir cette tâche ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="332"/>
+        <location filename="yaplukawindow.cpp" line="428"/>
         <source>Context menu</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="yaplukawindow.cpp" line="456"/>
+        <source>Sélectionnez une catégorie à supprimer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="yaplukawindow.cpp" line="469"/>
+        <source>Supprimez d&apos;abord les sous-catégories.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="yaplukawindow.cpp" line="476"/>
+        <source>Supprimer une catégorie</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="yaplukawindow.cpp" line="477"/>
+        <source>Supprimer « %1 » ?
+Les tâches seront conservées sans cette catégorie.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

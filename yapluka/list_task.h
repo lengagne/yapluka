@@ -16,6 +16,12 @@ public:
         qDebug()<<"list_task add_task id = "<< t->subject_;
     }
 
+    void actualiser_categories(list_category &categories)
+    {
+        if (master_)
+            master_->update_category(categories);
+    }
+
     void delete_task(task* t)
     {
         master_->delete_task(t);

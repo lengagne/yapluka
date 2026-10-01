@@ -114,7 +114,22 @@ void task_dialog::accept() {
         currentTask->creationdate_ = creationDateEdit->dateTime();
         currentTask->completiondate_ = completionDateEdit->dateTime();
         currentTask->modificationdate_ = modificationDateEdit->dateTime();
-        currentTask->cat_ = lcat_->get_cat_by_name(cat_of->currentText());
+
+        // il faut mettre à jour la liste des categories
+        category* new_cat = lcat_->get_cat_by_name(cat_of->currentText());
+        if (currentTask->cat_ != new_cat)
+        {
+            qDebug()<<"Changement de category";
+            // on supprime de l'ancienne categorie
+            if(currentTask->cat_)
+                currentTask->cat_->remove_task_by_id(currentTask->id_);
+            qDebug()<<"on a enlever de l'ancienne";
+            // on rajoute dans la nouvelle
+            new_cat->add_task_by_id(currentTask->id_);
+            qDebug()<<"on rajoute à la nouvelle";
+            currentTask->cat_ = new_cat;
+        }
+
     }
     QDialog::accept();
 }

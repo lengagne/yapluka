@@ -55,6 +55,11 @@ category::category(QDomElement root, int level)
     }
 }
 
+void category::add_task_by_id(QString id)
+{
+    ids_.append(id);
+}
+
 category* category::get_cat_for_id( QString id)
 {
     if (ids_.contains(id)) {
@@ -95,6 +100,11 @@ void category::get_categories(QList<QString> & list)
          list.append(c->name_);
          c->get_categories(list);
      }
+}
+
+void category::remove_task_by_id(QString id)
+{
+    ids_.removeOne(id);
 }
 
 void category::save(  QDomDocument& document,
@@ -145,6 +155,8 @@ void category::update_display(QTreeWidgetItem* cat_widget)
         cat_widget->setText(0, name_);
         cat_widget->setBackground(0,QBrush(QColor(bgColor_[0].toInt(), bgColor_[1].toInt(), bgColor_[2].toInt())));
         cat_widget->setForeground(0,QBrush(QColor(fgColor_[0].toInt(), fgColor_[1].toInt(), fgColor_[2].toInt())));
+
+        cat_widget->setData(0, Qt::UserRole, QVariant::fromValue(this));
     }
     //cat_widget->setBackground(0,QBrush(QColor(10,20,30))); // Jaune
     for (category* c : children_)

@@ -5,6 +5,8 @@
 #include <qmessagebox.h>
 #include <QSettings>
 #include <QPushButton>
+#include <QInputDialog>
+#include <QLineEdit>
 
 #include "task_dialog.h"
 
@@ -27,6 +29,36 @@ YaplukaWindow::YaplukaWindow(QWidget *parent)
     horizontalLayoutButton->addWidget(ui->BoutonEditTache);
     horizontalLayoutButton->addWidget(ui->BoutonFinirTache);
     horizontalLayoutButton->addWidget(ui->BoutonSupprimerTache);
+
+    auto *boutonToutesCategories =
+    new QPushButton(tr("Toutes les catégories"), this);
+    horizontalLayoutButton->addWidget(boutonToutesCategories);
+
+    connect(ui->categorie_widget, &QTreeWidget::itemClicked,
+            this, [this](QTreeWidgetItem *item, int) {
+        category_filter_ = item->text(0);
+        apply_filter_category();
+    });
+
+    connect(boutonToutesCategories, &QPushButton::clicked,
+            this, [this]() {
+        category_filter_.clear();
+        ui->categorie_widget->clearSelection();
+        apply_filter_category();
+    });
+
+
+    auto *ajouterCat = new QPushButton(tr("+ Catégorie"), this);
+    auto *supprimerCat = new QPushButton(tr("− Catégorie"), this);
+
+    horizontalLayoutButton->addWidget(ajouterCat);
+    horizontalLayoutButton->addWidget(supprimerCat);
+
+    connect(ajouterCat, &QPushButton::clicked,
+            this, &YaplukaWindow::ajouterCategorie);
+
+    connect(supprimerCat, &QPushButton::clicked,
+            this, &YaplukaWindow::supprimerCategorie);
 
     verticalLayout->addLayout(horizontalLayoutButton);
 
@@ -63,7 +95,68 @@ YaplukaWindow::~YaplukaWindow()
     delete ui;
 }
 
+void YaplukaWindow::ajouterCategorie()
+{
+    bool ok = false;
 
+    QString nom = QInputDialog::getText(
+        this,
+        tr("Ajouter une catégorie"),
+        tr("Nom :"),
+        QLineEdit::Normal,
+        QString(),
+        &ok
+    ).trimmed();
+
+    if (!ok || nom.isEmpty())
+        return;
+
+    if (!categories_.ajouter(nom)) {
+        QMessageBox::information(
+            this,
+            tr("Catégorie"),
+            tr("Une catégorie porte déjà ce nom.")
+        );
+        return;
+    }
+
+    update_list();
+    save();
+}
+
+
+bool YaplukaWindow::filter_task(QTreeWidgetItem *item)
+{
+    bool correspond = category_filter_.isEmpty()
+                      || item->text(3) == category_filter_;
+
+    bool enfantVisible = false;
+
+    for (int i = 0; i < item->childCount(); ++i) {
+        // Toujours parcourir chaque enfant.
+        if (filter_task(item->child(i))) {
+            enfantVisible = true;
+        }
+    }
+
+    bool visible = correspond || enfantVisible;
+    item->setHidden(!visible);
+
+    return visible;
+}
+
+void YaplukaWindow::apply_filter_category()
+{
+    // Éviter qu'une tâche devenue invisible reste sélectionnée.
+    ui->taskWidget->clearSelection();
+    ui->taskWidget->setCurrentItem(nullptr);
+
+    for (int i = 0; i < ui->taskWidget->topLevelItemCount(); ++i) {
+        filter_task(ui->taskWidget->topLevelItem(i));
+    }
+
+    ui->taskWidget->expandAll();
+}
 
 void YaplukaWindow::contextMenuEvent(QContextMenuEvent *event)
 {
@@ -174,6 +267,7 @@ void YaplukaWindow::onActionEdit() {
     qDebug()<<"Action 2 triggered";
     QTreeWidgetItem *item = ui->taskWidget->currentItem();
     editTask(item,0);
+    save();
 }
 
 
@@ -217,6 +311,7 @@ void YaplukaWindow::on_actionnouvelle_tache_triggered()
     dialog->exec();
     tasks_.add_task(new_task);
     update_list();
+    save();
 }
 
 void YaplukaWindow::on_action_finish_tache_triggered()
@@ -249,6 +344,7 @@ void YaplukaWindow::on_cachefinibox_stateChanged(int arg1)
 
 void YaplukaWindow::read_file()
 {
+    category_filter_.clear();
     if (!currentFileName_.isEmpty()) {
         //QMessageBox::information(this, "Fichier sélectionné", currentFileName_);
     }
@@ -350,6 +446,57 @@ void YaplukaWindow::showContextMenu(const QPoint &pos)
 }
 
 
+void YaplukaWindow::supprimerCategorie()
+{
+    auto *item = ui->categorie_widget->currentItem();
+
+    if (!item) {
+        QMessageBox::information(
+            this, tr("Catégorie"),
+            tr("Sélectionnez une catégorie à supprimer.")
+        );
+        return;
+    }
+
+    category *cat = item->data(0, Qt::UserRole).value<category*>();
+
+    if (!cat)
+        return;
+
+    if (!cat->children_.isEmpty()) {
+        QMessageBox::information(
+            this, tr("Catégorie"),
+            tr("Supprimez d'abord les sous-catégories.")
+        );
+        return;
+    }
+
+    auto reponse = QMessageBox::question(
+        this,
+        tr("Supprimer une catégorie"),
+        tr("Supprimer « %1 » ?\n"
+           "Les tâches seront conservées sans cette catégorie.")
+            .arg(cat->name_),
+        QMessageBox::Yes | QMessageBox::No,
+        QMessageBox::No
+    );
+
+    if (reponse != QMessageBox::Yes)
+        return;
+
+    if (!categories_.supprimer(cat))
+        return;
+
+    // Réparer les liens avant de reconstruire l'affichage.
+    tasks_.actualiser_categories(categories_);
+
+    // Si vous avez ajouté le filtre de la réponse précédente :
+    category_filter_.clear();
+
+    update_list();
+    save();
+}
+
 
 void YaplukaWindow::updateTask( ) {
     update_list();
@@ -364,6 +511,8 @@ void YaplukaWindow::update_list()
     categories_.update_display(ui->categorie_widget);
 
     ui->cachefinibox->setChecked(cache_fini_);
+
+    apply_filter_category();
 }
 
 

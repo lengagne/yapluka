@@ -13,6 +13,10 @@ public:
 
     category* get_cat_by_name( QString cat_name);
 
+    bool ajouter(QString nom);
+
+    bool supprimer(category *cat);
+
     void get_categories( QList<QString> & list);
 
     void init(QString currentFileName_);

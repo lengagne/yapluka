@@ -8,7 +8,7 @@
 #include <QDebug>
 #include <QDomDocument>
 #include <QTreeWidget>
-
+#include <QMetaType>
 
 class category
 {
@@ -17,11 +17,15 @@ public:
 
     category(QDomElement element, int level=0);
 
+    void add_task_by_id(QString id);
+
     category* get_cat_for_id( QString id);
 
     category* get_cat_by_name( QString cat_name);
 
     void get_categories(QList<QString> & list);
+
+    void remove_task_by_id(QString id);
 
     void save( QDomDocument& document, QDomElement& elroot);
 
@@ -37,5 +41,6 @@ public:
 
 };
 
+Q_DECLARE_METATYPE(category*)
 
 #endif // CATEGORY_H
