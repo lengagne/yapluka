@@ -29,10 +29,22 @@ void task_dialog::initUI() {
     prioritySpinBox = new QSpinBox(this);
     idEdit = new QLabel(this);
     cat_of = new QComboBox(this);
-    lcat_->get_categories(cats_);
-    int cpt = 1;
-    for (const QString &item : cats_) {
-        cat_of->addItem(item, cpt++);
+    cat_of->addItem(
+        tr("(Sans catégorie)"),
+        QVariant::fromValue(static_cast<category*>(nullptr))
+    );
+
+    // Même ordre et mêmes chemins que dans l'éditeur de catégorie.
+    for (category *cat : lcat_->toutes_categories()) {
+        QString chemin = cat->name_;
+
+        for (category *parent = lcat_->parent_de(cat);
+            parent;
+            parent = lcat_->parent_de(parent)) {
+            chemin.prepend(parent->name_ + " / ");
+        }
+
+        cat_of->addItem(chemin, QVariant::fromValue(cat));
     }
 
     // il faut supprimer de l'ancienne categorie et ajouter a la nouvelle
@@ -92,12 +104,22 @@ void task_dialog::loadTaskData() {
         creationDateEdit->setDateTime(currentTask->creationdate_);
         completionDateEdit->setDateTime(currentTask->completiondate_);
         modificationDateEdit->setDateTime(currentTask->modificationdate_);
-        if(currentTask->cat_)
-        {
-            int index = cats_.indexOf(currentTask->cat_->name_);
-            if (index !=-1)
-            {
-                cat_of->setCurrentIndex( index );
+        // if(currentTask->cat_)
+        // {
+        //     int index = cats_.indexOf(currentTask->cat_->name_);
+        //     if (index !=-1)
+        //     {
+        //         cat_of->setCurrentIndex( index );
+        //     }
+        // }
+        cat_of->setCurrentIndex(0);
+
+        for (int i = 1; i < cat_of->count(); ++i) {
+            category *cat = cat_of->itemData(i).value<category*>();
+
+            if (cat == currentTask->cat_) {
+                cat_of->setCurrentIndex(i);
+                break;
             }
         }
     }
@@ -115,18 +137,31 @@ void task_dialog::accept() {
         currentTask->completiondate_ = completionDateEdit->dateTime();
         currentTask->modificationdate_ = modificationDateEdit->dateTime();
 
-        // il faut mettre à jour la liste des categories
-        category* new_cat = lcat_->get_cat_by_name(cat_of->currentText());
-        if (currentTask->cat_ != new_cat)
-        {
-            qDebug()<<"Changement de category";
-            // on supprime de l'ancienne categorie
-            if(currentTask->cat_)
+        // // il faut mettre à jour la liste des categories
+        // category* new_cat = lcat_->get_cat_by_name(cat_of->currentText());
+        // if (currentTask->cat_ != new_cat)
+        // {
+        //     qDebug()<<"Changement de category";
+        //     // on supprime de l'ancienne categorie
+        //     if(currentTask->cat_)
+        //         currentTask->cat_->remove_task_by_id(currentTask->id_);
+        //     qDebug()<<"on a enlever de l'ancienne";
+        //     // on rajoute dans la nouvelle
+        //     new_cat->add_task_by_id(currentTask->id_);
+        //     qDebug()<<"on rajoute à la nouvelle";
+        //     currentTask->cat_ = new_cat;
+        // }
+        category *new_cat = cat_of->currentData().value<category*>();
+
+        if (currentTask->cat_ != new_cat) {
+            if (currentTask->cat_) {
                 currentTask->cat_->remove_task_by_id(currentTask->id_);
-            qDebug()<<"on a enlever de l'ancienne";
-            // on rajoute dans la nouvelle
-            new_cat->add_task_by_id(currentTask->id_);
-            qDebug()<<"on rajoute à la nouvelle";
+            }
+
+            if (new_cat) {
+                new_cat->add_task_by_id(currentTask->id_);
+            }
+
             currentTask->cat_ = new_cat;
         }
 

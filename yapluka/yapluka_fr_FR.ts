@@ -251,4 +251,12 @@ Les tâches seront conservées sans cette catégorie.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
+<context>
+    <name>task_dialog</name>
+    <message>
+        <location filename="task_dialog.cpp" line="33"/>
+        <source>(Sans catégorie)</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
 </TS>
