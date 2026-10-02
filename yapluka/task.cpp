@@ -23,9 +23,15 @@ QString generateUniqueId() {
 task::task()
 {
     id_ = generateUniqueId();
-    creationdate_ = QDateTime::currentDateTime();
-    percentage_=0;
-    qDebug()<<"new task id = "<< id_;
+
+    const QDateTime maintenant = QDateTime::currentDateTime();
+
+    creationdate_ = maintenant;
+    modificationdate_ = maintenant;
+
+    percentage_ = 0;
+    priority_ = 0;
+    status_ = 0;
 }
 
 task::task(QDomElement root, int level)
@@ -299,10 +305,12 @@ void task::update_display(QTreeWidgetItem *parentItem, bool cache)
             4, QString::number(priority_).rightJustified(2, '0')
         );
 
-        item->setText(5, creationdate_.toString("yyyy-MM-dd"));
-        item->setText(6, actualstartdate_.toString("yyyy-MM-dd"));
-        item->setText(7, completiondate_.toString("yyyy-MM-dd"));
-        item->setText(8, modificationdate_.toString("yyyy-MM-dd"));
+        const QString format = QStringLiteral("yyyy-MM-dd HH:mm");
+
+        item->setText(5, creationdate_.toString(format));
+        item->setText(6, actualstartdate_.toString(format));
+        item->setText(7, completiondate_.toString(format));
+        item->setText(8, modificationdate_.toString(format));
 
         item->setData(9, Qt::UserRole + 2, percentage_);
         item->setText(

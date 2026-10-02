@@ -31,8 +31,8 @@
     </message>
     <message>
         <location filename="yaplukawindow.cpp" line="177"/>
-        <location filename="yaplukawindow.cpp" line="820"/>
-        <location filename="yaplukawindow.cpp" line="833"/>
+        <location filename="yaplukawindow.cpp" line="872"/>
+        <location filename="yaplukawindow.cpp" line="885"/>
         <source>Catégorie</source>
         <translation type="unfinished"></translation>
     </message>
@@ -135,63 +135,63 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="595"/>
-        <source>Supprimer l&apos;élément</source>
+        <location filename="yaplukawindow.cpp" line="624"/>
+        <source>Aucune tâche sélectionnée.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="596"/>
-        <source>Êtes-vous sûr de vouloir supprimer cet élément ?</source>
+        <location filename="yaplukawindow.cpp" line="634"/>
+        <source>Supprimer une tâche</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="612"/>
+        <location filename="yaplukawindow.cpp" line="638"/>
+        <source>Voulez-vous vraiment supprimer la tâche « %1 » ?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="yaplukawindow.cpp" line="623"/>
         <source>Suppression</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="612"/>
-        <source>Aucun élément sélectionné.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="yaplukawindow.cpp" line="685"/>
+        <location filename="yaplukawindow.cpp" line="723"/>
         <source>Finir la tâche</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="686"/>
+        <location filename="yaplukawindow.cpp" line="724"/>
         <source>Êtes-vous sûr de vouloir finir cette tâche ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="793"/>
+        <location filename="yaplukawindow.cpp" line="845"/>
         <source>Context menu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="821"/>
+        <location filename="yaplukawindow.cpp" line="873"/>
         <source>Sélectionnez une catégorie à supprimer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="834"/>
+        <location filename="yaplukawindow.cpp" line="886"/>
         <source>Supprimez d&apos;abord les sous-catégories.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="841"/>
+        <location filename="yaplukawindow.cpp" line="893"/>
         <source>Supprimer une catégorie</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="842"/>
+        <location filename="yaplukawindow.cpp" line="894"/>
         <source>Supprimer « %1 » ?
 Les tâches seront conservées sans cette catégorie.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="yaplukawindow.cpp" line="885"/>
+        <location filename="yaplukawindow.cpp" line="937"/>
         <source>Achevées : %1    |    En cours : %2    |    À faire sous 7 jours : %3</source>
         <translation type="unfinished"></translation>
     </message>

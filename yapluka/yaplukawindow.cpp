@@ -95,7 +95,7 @@ YaplukaWindow::YaplukaWindow(QWidget *parent)
 
     // Zone principale : tâches à gauche, colonne droite à droite.
     auto *horizontalLayout = new QHBoxLayout;
-    horizontalLayout->addWidget(ui->taskWidget, 3);
+    horizontalLayout->addWidget(ui->taskWidget, 4);
     horizontalLayout->addLayout(colonneDroite, 1);
 
     verticalLayout->addLayout(horizontalLayout, 1);
@@ -587,30 +587,68 @@ void YaplukaWindow::menuCategorie(const QPoint &pos)
         supprimerCategorie();
 }
 
-void YaplukaWindow::onActionDeleteTask() {
-    qDebug()<<"On va supprimer une tache ";
+// void YaplukaWindow::onActionDeleteTask() {
+//     qDebug()<<"On va supprimer une tache ";
+//     QTreeWidgetItem *item = ui->taskWidget->currentItem();
+//
+//     if (item) {
+//         int ret = QMessageBox::warning(this, tr("Supprimer l'élément"),
+//                                        tr("Êtes-vous sûr de vouloir supprimer cet élément ?"),
+//                                        QMessageBox::Yes | QMessageBox::No);
+//         if (ret == QMessageBox::Yes) {
+//
+//             QString id = item->text(1);
+//
+//             task* task_to_delete = tasks_.get_task(id);
+//             qDebug() << "On va supprimer "<< task_to_delete->subject_;
+//
+//             tasks_.delete_task(task_to_delete);
+//             update_list();
+//             save();
+//             //int row = treeWidget->indexOfTopLevelItem(item);
+//             //delete treeWidget->takeTopLevelItem(row);
+//         }
+//     } else {
+//         QMessageBox::information(this, tr("Suppression"), tr("Aucun élément sélectionné."));
+//     }
+// }
+
+void YaplukaWindow::onActionDeleteTask()
+{
     QTreeWidgetItem *item = ui->taskWidget->currentItem();
 
-    if (item) {
-        int ret = QMessageBox::warning(this, tr("Supprimer l'élément"),
-                                       tr("Êtes-vous sûr de vouloir supprimer cet élément ?"),
-                                       QMessageBox::Yes | QMessageBox::No);
-        if (ret == QMessageBox::Yes) {
-
-            QString id = item->text(1);
-
-            task* task_to_delete = tasks_.get_task(id);
-            qDebug() << "On va supprimer "<< task_to_delete->subject_;
-
-            tasks_.delete_task(task_to_delete);
-            update_list();
-            save();
-            //int row = treeWidget->indexOfTopLevelItem(item);
-            //delete treeWidget->takeTopLevelItem(row);
-        }
-    } else {
-        QMessageBox::information(this, tr("Suppression"), tr("Aucun élément sélectionné."));
+    if (!item) {
+        QMessageBox::information(
+            this,
+            tr("Suppression"),
+            tr("Aucune tâche sélectionnée.")
+        );
+        return;
     }
+
+    task *tache = tasks_.get_task(item->text(1));
+    if (!tache)
+        return;
+
+    QMessageBox confirmation(this);
+    confirmation.setWindowTitle(tr("Supprimer une tâche"));
+    confirmation.setIcon(QMessageBox::Warning);
+    confirmation.setTextFormat(Qt::PlainText);
+    confirmation.setText(
+        tr("Voulez-vous vraiment supprimer la tâche « %1 » ?")
+            .arg(tache->subject_)
+    );
+    confirmation.setStandardButtons(
+        QMessageBox::Yes | QMessageBox::No
+    );
+    confirmation.setDefaultButton(QMessageBox::No);
+
+    if (confirmation.exec() != QMessageBox::Yes)
+        return;
+
+    tasks_.delete_task(tache);
+    update_list();
+    save();
 }
 
 void YaplukaWindow::onActionEdit() {
@@ -688,13 +726,27 @@ void YaplukaWindow::on_action_finish_tache_triggered()
     if (ret == QMessageBox::Yes)
     {
         QTreeWidgetItem *item = ui->taskWidget->currentItem();
-        //editTask(item,0);
-        QString id = item->text(1);
-        qDebug() << "looking for id " << id;
-        task* task_to_edit = tasks_.get_task(id);
-        task_to_edit->completiondate_ = QDateTime::currentDateTime();
+
+        if (!item)
+            return;
+
+        task *task_to_edit = tasks_.get_task(item->text(1));
+        if (!task_to_edit)
+            return;
+
+        const QDateTime maintenant = QDateTime::currentDateTime();
+
+        if (!task_to_edit->actualstartdate_.isValid())
+            task_to_edit->actualstartdate_ = maintenant;
+
+        if (task_to_edit->percentage_ < 100
+            || !task_to_edit->completiondate_.isValid()) {
+            task_to_edit->completiondate_ = maintenant;
+        }
+
         task_to_edit->percentage_ = 100;
         task_to_edit->status_ = 1;
+        task_to_edit->modificationdate_ = maintenant;
     }
     update_list();
     save();
